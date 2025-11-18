@@ -8,9 +8,11 @@ interface StoryboardDisplayProps {
     setScenes: React.Dispatch<React.SetStateAction<Scene[]>>;
     settings: Settings;
     characterBible: CharacterBible | null;
+    // FIX: Add withApiKeyRotation prop to handle authenticated API calls consistently.
+    withApiKeyRotation: (apiCall: (apiKey: string) => Promise<any>) => Promise<any>;
 }
 
-const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({ scenes, setScenes, settings, characterBible }) => {
+const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({ scenes, setScenes, settings, characterBible, withApiKeyRotation }) => {
     const [regeneratingSceneId, setRegeneratingSceneId] = useState<string | null>(null);
 
     const handleDeleteScene = (id: string) => {
@@ -19,11 +21,12 @@ const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({ scenes, setScenes
     
     const handleRegenerateScene = async (id: string) => {
         const sceneToRegen = scenes.find(s => s.id === id);
-        if (!sceneToRegen) return;
+        if (!sceneToRegen || !characterBible) return;
 
         setRegeneratingSceneId(id);
         try {
-            const newSceneData = await regenerateScene(settings, characterBible, sceneToRegen.englishPrompt);
+            // FIX: Use the withApiKeyRotation function to make an authenticated call.
+            const newSceneData = await withApiKeyRotation(apiKey => regenerateScene(apiKey, settings, characterBible, sceneToRegen.englishPrompt));
             setScenes(prevScenes => prevScenes.map(scene =>
                 scene.id === id ? { ...newSceneData, id: scene.id } : scene
             ));

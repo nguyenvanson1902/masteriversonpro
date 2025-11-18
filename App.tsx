@@ -1,12 +1,13 @@
+
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 
 const DirectorPage = lazy(() => import('./components/DirectorPage'));
 const StorytellerPage = lazy(() => import('./components/StorytellerPage'));
 const AffiliatePage = lazy(() => import('./components/AffiliatePage'));
-const CharacterConsistencyPromptPage = lazy(() => import('./components/CharacterConsistencyPromptPage'));
 const SeoYoutubePage = lazy(() => import('./components/SeoYoutubePage'));
 const PromptToolPage = lazy(() => import('./components/PromptToolPage'));
+const PromptWizardPage = lazy(() => import('./components/PromptWizardPage'));
 const ThumbnailGeneratorPage = lazy(() => import('./components/ThumbnailGeneratorPage'));
 
 import {
@@ -25,6 +26,7 @@ import {
     ApiKeySettingsIcon,
     CheckCircleIcon,
     XCircleIcon,
+    WandIcon,
 } from './components/Icons';
 import * as geminiService from './services/geminiService';
 
@@ -190,25 +192,24 @@ const AppCard: React.FC<AppCardProps> = ({ title, description, icon, onClick, di
     );
 };
 
-const AppSelectorPage = ({ onSelectDirectorApp, onSelectStorytellerApp, onSelectAffiliateApp, onSelectCharacterConsistencyApp, onSelectSeoYoutubeApp, onSelectPromptToolApp, onSelectThumbnailApp, onOpenApiKeyModal }: {
+const AppSelectorPage = ({ onSelectDirectorApp, onSelectStorytellerApp, onSelectAffiliateApp, onSelectSeoYoutubeApp, onSelectPromptToolApp, onSelectThumbnailApp, onSelectPromptWizardApp, onOpenApiKeyModal }: {
     onSelectDirectorApp: () => void;
     onSelectStorytellerApp: () => void;
     onSelectAffiliateApp: () => void;
-    onSelectCharacterConsistencyApp: () => void;
     onSelectSeoYoutubeApp: () => void;
     onSelectPromptToolApp: () => void;
     onSelectThumbnailApp: () => void;
+    onSelectPromptWizardApp: () => void;
     onOpenApiKeyModal: () => void;
 }) => {
     const apps = [
         { title: "RIVER SƠN MASTER DIRECTOR", description: "Biến ý tưởng thành kịch bản video chi tiết, sẵn sàng cho các công cụ AI tạo video.", icon: <DirectorIcon className="w-20 h-20" />, onClick: onSelectDirectorApp, disabled: false, },
         { title: "RIVER SƠN MASTER STORYTELLING", description: "Tạo kịch bản lồng tiếng chuyên nghiệp cho video YouTube với giọng đọc AI chất lượng cao.", icon: <MicIcon className="w-20 h-20" />, onClick: onSelectStorytellerApp, disabled: false, },
-        { title: "Prompt Nhất Quán Nhân Vật", description: "Tạo prompt video chi tiết theo từng bước để đảm bảo tính nhất quán của nhân vật và bối cảnh.", icon: <FileText className="w-20 h-20" />, onClick: onSelectCharacterConsistencyApp, disabled: false },
+        { title: "Tạo Prompt Video (Nhất Quán)", description: "Tạo kịch bản video chi tiết theo từng bước, đảm bảo tính nhất quán của nhân vật và bối cảnh.", icon: <FileText className="w-20 h-20" />, onClick: onSelectPromptToolApp, disabled: false },
         { title: "Video Affiliate Ngắn", description: "Tạo ảnh và kịch bản quảng cáo sản phẩm với người mẫu AI cho TikTok, Facebook.", icon: <SparklesIcon className="w-20 h-20" />, onClick: onSelectAffiliateApp, disabled: false },
         { title: "AI SEO YouTube", description: "Tối ưu hóa video của bạn cho YouTube với tiêu đề, mô tả và từ khóa do AI tạo.", icon: <SparklesIcon className="w-20 h-20" />, onClick: onSelectSeoYoutubeApp, disabled: false, },
-        { title: "Tạo Prompt Video", description: "Tạo nhanh các prompt video chi tiết từ các ý tưởng đơn giản cho AI.", icon: <SparklesIcon className="w-20 h-20" />, onClick: onSelectPromptToolApp, disabled: false },
         { title: "Tạo Thumbnail AI", description: "Thiết kế thumbnail YouTube, Facebook hấp dẫn bằng AI, có thể sửa hoặc tạo mới.", icon: <ImageIcon className="w-20 h-20" />, onClick: onSelectThumbnailApp, disabled: false },
-        { title: "Ứng dụng E (Chờ phát triển)", description: "Một công cụ mạnh mẽ khác đang được xây dựng để giúp bạn thành công.", icon: <SettingsIcon className="w-20 h-20" />, disabled: true, },
+        { title: "Trợ lý tạo Prompt Video", description: "Xây dựng prompt video chi tiết một cách nhanh chóng với các trường gợi ý.", icon: <WandIcon className="w-20 h-20" />, onClick: onSelectPromptWizardApp, disabled: false },
     ];
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-blue-950 text-gray-100 p-4 sm:p-6 lg:p-8">
@@ -264,7 +265,7 @@ const LoadingFallback = () => (
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState('login'); // 'login', 'selector', 'director', 'storyteller', 'affiliate', 'characterConsistency', 'seoYoutube', 'promptTool', 'thumbnail'
+    const [currentPage, setCurrentPage] = useState('login'); // 'login', 'selector', 'director', 'storyteller', 'affiliate', 'seoYoutube', 'promptTool', 'promptWizard', 'thumbnail'
 
     // API Key Management State
     const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
@@ -374,9 +375,9 @@ const App = () => {
                     onSelectDirectorApp={() => setCurrentPage('director')}
                     onSelectStorytellerApp={() => setCurrentPage('storyteller')}
                     onSelectAffiliateApp={() => setCurrentPage('affiliate')}
-                    onSelectCharacterConsistencyApp={() => setCurrentPage('characterConsistency')}
                     onSelectSeoYoutubeApp={() => setCurrentPage('seoYoutube')}
                     onSelectPromptToolApp={() => setCurrentPage('promptTool')}
+                    onSelectPromptWizardApp={() => setCurrentPage('promptWizard')}
                     onSelectThumbnailApp={() => setCurrentPage('thumbnail')}
                     onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
                 />;
@@ -384,14 +385,14 @@ const App = () => {
                 return <DirectorPage onBack={() => setCurrentPage('selector')} />;
             case 'storyteller':
                 return <StorytellerPage onBack={() => setCurrentPage('selector')} />;
-            case 'characterConsistency':
-                return <CharacterConsistencyPromptPage onBack={() => setCurrentPage('selector')} />;
             case 'affiliate':
                 return <AffiliatePage onBack={() => setCurrentPage('selector')} />;
             case 'seoYoutube':
                 return <SeoYoutubePage onBack={() => setCurrentPage('selector')} />;
             case 'promptTool':
                 return <PromptToolPage onBack={() => setCurrentPage('selector')} />;
+            case 'promptWizard':
+                return <PromptWizardPage onBack={() => setCurrentPage('selector')} />;
             case 'thumbnail':
                 return <ThumbnailGeneratorPage onBack={() => setCurrentPage('selector')} />;
             default:

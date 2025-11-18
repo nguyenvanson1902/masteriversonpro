@@ -52,9 +52,11 @@ interface SettingsPanelProps {
     setSettings: React.Dispatch<React.SetStateAction<Settings>>;
     onGenerate: () => void;
     isLoading: boolean;
+    // FIX: Add withApiKeyRotation prop to handle authenticated API calls consistently.
+    withApiKeyRotation: (apiCall: (apiKey: string) => Promise<any>) => Promise<any>;
 }
 
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, onGenerate, isLoading }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, onGenerate, isLoading, withApiKeyRotation }) => {
     const [listeningField, setListeningField] = useState<'idea' | 'context' | 'characters' | null>(null);
     const [isGeneratingIdea, setIsGeneratingIdea] = useState(false);
     const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -136,7 +138,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
     const handleGenerateIdea = async () => {
         setIsGeneratingIdea(true);
         try {
-            const suggestion = await generateTrendingIdea();
+            // FIX: Use the withApiKeyRotation function to make an authenticated call.
+            const suggestion = await withApiKeyRotation(apiKey => generateTrendingIdea(apiKey));
             setSettings(prev => ({ 
                 ...prev, 
                 idea: suggestion.idea,

@@ -1,5 +1,7 @@
 
 
+
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { STORYTELLER_TOPICS, TTS_VOICES } from '../constants';
 import * as geminiService from '../services/geminiService';
@@ -91,9 +93,7 @@ const StorytellerPage = ({ onBack }) => {
     const [generatedScript, setGeneratedScript] = useState("");
     const [language, setLanguage] = useState("vi");
     const [selectedVoice, setSelectedVoice] = useState(TTS_VOICES[0]);
-    const [styleInstructions, setStyleInstructions] = useState(TTS_VOICES[0].style);
     const [characterCount, setCharacterCount] = useState(1500);
-    const [temperature, setTemperature] = useState(1.0);
     
     const [isGeneratingScript, setIsGeneratingScript] = useState(false);
     const [isGeneratingSpeech, setIsGeneratingSpeech] = useState(false);
@@ -104,6 +104,10 @@ const StorytellerPage = ({ onBack }) => {
     const [fullAudioUrl, setFullAudioUrl] = useState(null);
     
     const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+
+    // New states for voice testing
+    const [testSentence, setTestSentence] = useState('Đây là bản nghe thử giọng nói do AI tạo ra.');
+    const [isTestingVoice, setIsTestingVoice] = useState(false);
 
     const audioContextRef = useRef(null);
     const scriptTextAreaRef = useRef(null);
@@ -242,7 +246,7 @@ const StorytellerPage = ({ onBack }) => {
         try {
             const voiceForApi = selectedVoice.value;
             const base64Audio = await withApiKeyRotation(
-                (key) => geminiService.generateSpeech(key, textToSpeak, voiceForApi, styleInstructions, temperature)
+                (key) => geminiService.generateSpeech(key, textToSpeak, voiceForApi)
             );
             const pcmData = decode(base64Audio);
 
@@ -270,6 +274,39 @@ const StorytellerPage = ({ onBack }) => {
         }
     };
     
+    const handleTestVoice = async () => {
+        if (!testSentence.trim()) {
+            setError("Vui lòng nhập văn bản để nghe thử.");
+            return;
+        }
+    
+        setIsTestingVoice(true);
+        setError(null);
+        
+        try {
+            const voiceForApi = selectedVoice.value;
+            const base64Audio = await withApiKeyRotation(
+                (key) => geminiService.generateSpeech(key, testSentence, voiceForApi)
+            );
+            const pcmData = decode(base64Audio);
+    
+            if (audioContextRef.current) {
+                const audioBuffer = await decodeAudioData(pcmData, audioContextRef.current, 24000, 1);
+                const source = audioContextRef.current.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContextRef.current.destination);
+                source.start(0);
+                source.onended = () => setIsTestingVoice(false);
+            } else {
+                setIsTestingVoice(false);
+            }
+    
+        } catch (err) {
+            setIsTestingVoice(false);
+            // error is handled by withApiKeyRotation
+        }
+    };
+
     const handleTextSelection = () => {
         const text = window.getSelection()?.toString() || "";
         if (text.trim() && scriptTextAreaRef.current) {
@@ -280,7 +317,7 @@ const StorytellerPage = ({ onBack }) => {
                 const containerRect = scriptTextAreaRef.current.getBoundingClientRect();
                 setPlayButtonPosition({
                     top: rect.top - containerRect.top - 45,
-                    left: rect.left - containerRect.left + (rect.width / 2) - 60,
+                    left: rect.left - containerRect.top + (rect.width / 2) - 60,
                 });
             }
             setSelectedText(text);
@@ -295,7 +332,6 @@ const StorytellerPage = ({ onBack }) => {
         const newVoiceObject = TTS_VOICES.find(v => v.label === newLabel);
         if (newVoiceObject) {
             setSelectedVoice(newVoiceObject);
-            setStyleInstructions(newVoiceObject.style);
         }
     };
 
@@ -397,16 +433,36 @@ const StorytellerPage = ({ onBack }) => {
                                 <select id="voice" value={selectedVoice.label} onChange={handleVoiceChange} className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500">
                                     {TTS_VOICES.map(v => <option key={v.label} value={v.label}>{v.label}</option>)}
                                 </select>
-                            </div>
-                            <div>
-                                <label htmlFor="style" className="block text-lg font-semibold mb-2 text-gray-200">Hướng dẫn Phong cách</label>
-                                <input id="style" type="text" value={styleInstructions} onChange={e => setStyleInstructions(e.target.value)} placeholder="Ví dụ: Đọc với giọng ấm áp, thân thiện" className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500" />
-                            </div>
-                             <div>
-                                <label htmlFor="temperature" className="block text-lg font-semibold mb-2 text-gray-200">Mức độ Sáng tạo (Nhiệt độ)</label>
-                                <div className="flex items-center gap-4">
-                                    <input id="temperature" type="range" min="0" max="2" step="0.1" value={temperature} onChange={e => setTemperature(Number(e.target.value))} className="w-full" />
-                                    <span className="font-mono text-lg text-lime-300 w-16 text-center">{temperature.toFixed(1)}</span>
+                                {selectedVoice.style && (
+                                    <p className="text-sm text-gray-400 mt-2 p-3 bg-blue-950/50 rounded-lg border border-blue-800">{selectedVoice.style}</p>
+                                )}
+                                <div className="mt-3 p-3 bg-blue-950/50 rounded-lg border border-blue-800">
+                                    <label htmlFor="test-sentence" className="block text-sm font-semibold mb-2 text-gray-300">Nghe thử giọng nói đã chọn</label>
+                                    <div className="flex items-center gap-2">
+                                        <input 
+                                            id="test-sentence"
+                                            type="text"
+                                            value={testSentence}
+                                            onChange={e => setTestSentence(e.target.value)}
+                                            className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500"
+                                        />
+                                        <button 
+                                            onClick={handleTestVoice}
+                                            disabled={isTestingVoice || !testSentence.trim() || !isKeySet}
+                                            className="flex-shrink-0 px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-900 text-white font-semibold rounded-lg flex items-center justify-center"
+                                            style={{minWidth: '120px'}}
+                                            title="Nghe thử giọng nói với văn bản mẫu"
+                                        >
+                                            {isTestingVoice ? (
+                                                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            ) : (
+                                                <><PlayIcon className="w-5 h-5 mr-1.5" /> Nghe thử</>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, Type } from "@google/genai";
 import * as xlsx from 'xlsx';
@@ -72,8 +73,8 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
     };
 
     return (
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-blue-500 hover:bg-slate-800">
-            <h3 className="text-lg font-semibold text-slate-300 mb-3">{title}</h3>
+        <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-blue-500 hover:bg-blue-800">
+            <h3 className="text-lg font-semibold text-blue-200 mb-3">{title}</h3>
             <input
                 type="file"
                 ref={inputRef}
@@ -83,12 +84,12 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
             />
             <div
                 onClick={handleClick}
-                className="w-full aspect-square bg-slate-900/70 rounded-lg cursor-pointer flex items-center justify-center border-2 border-dashed border-slate-600 hover:border-blue-600 transition-colors relative"
+                className="w-full aspect-square bg-blue-950/50 rounded-lg cursor-pointer flex items-center justify-center border-2 border-dashed border-blue-700 hover:border-blue-600 transition-colors relative"
             >
                 {preview ? (
                     <img src={preview} alt="Uploaded preview" className="w-full h-full object-cover rounded-lg" />
                 ) : (
-                    <div className="flex flex-col items-center text-slate-500">
+                    <div className="flex flex-col items-center text-blue-300">
                         <UploadIcon />
                         <p className="mt-2 text-sm">Nhấp để tải lên</p>
                     </div>
@@ -100,10 +101,10 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
 
 const SkeletonLoader = () => (
     <div className="w-full animate-pulse flex flex-col gap-4">
-        <div className="aspect-square bg-slate-700 rounded-lg"></div>
-        <div className="h-4 bg-slate-700 rounded w-3/4"></div>
-        <div className="h-4 bg-slate-700 rounded w-full"></div>
-        <div className="h-4 bg-slate-700 rounded w-1/2"></div>
+        <div className="aspect-square bg-blue-800 rounded-lg"></div>
+        <div className="h-4 bg-blue-800 rounded w-3/4"></div>
+        <div className="h-4 bg-blue-800 rounded w-full"></div>
+        <div className="h-4 bg-blue-800 rounded w-1/2"></div>
     </div>
 );
 
@@ -113,10 +114,6 @@ const AffiliateScriptDisplay = ({
     withApiKeyRotation,
     setError,
 }) => {
-    const [isElaboratingAll, setIsElaboratingAll] = useState(false);
-    const [isDownloadingSummary, setIsDownloadingSummary] = useState(false);
-    const [resultView, setResultView] = useState('editor');
-
     const renumberScenes = (scenes) => scenes.map((scene, index) => ({ ...scene, scene_number: index + 1 }));
 
     const handleUpdateScene = (index, updatedScene) => {
@@ -126,48 +123,38 @@ const AffiliateScriptDisplay = ({
         setScriptData({ ...scriptData, scenes: newScenes });
     };
 
-    const handleElaborateAll = async () => {
+    const handleCopyJson = () => {
         if (!scriptData) return;
-        setIsElaboratingAll(true);
-        setError(null);
-        try {
-            const elaboratedScenes = await withApiKeyRotation(apiKey =>
-                geminiService.elaborateAllScenes(apiKey, scriptData.production_plan, scriptData.scenes)
-            );
-            setScriptData({ ...scriptData, scenes: renumberScenes(elaboratedScenes) });
-        } catch (err) {
-            setError(getApiErrorMessage(err));
-        } finally {
-            setIsElaboratingAll(false);
-        }
+        navigator.clipboard.writeText(JSON.stringify(scriptData, null, 2));
+        alert("Đã sao chép JSON vào clipboard!");
     };
     
-    const handleDownloadTxt = () => {
-        if (!scriptData) return;
-        let content = `Title: ${scriptData.production_plan.title}\nLogline: ${scriptData.production_plan.logline}\n\n`;
-        scriptData.scenes.forEach(scene => {
-            content += `SCENE ${scene.scene_number}\nPROMPT: ${scene.video_prompt}\n\n`;
-        });
+    const handleDownloadTxtScenesOnly = () => {
+        if (!scriptData || !scriptData.scenes) return;
+        const content = scriptData.scenes.map(scene => scene.video_prompt).join('\n\n');
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${scriptData.production_plan.title.replace(/\s+/g, '_')}_script.txt`;
+        a.download = `${scriptData.production_plan.title.replace(/\s+/g, '_')}_prompts.txt`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     };
 
     const handleDownloadXlsx = () => {
-        if (!scriptData) return;
-        const dataForSheet = scriptData.scenes.map(s => ({
-            'scene_number': s.scene_number, 'video_prompt': s.video_prompt, 'duration_seconds': s.duration_seconds,
-            'aspect_ratio': s.aspect_ratio, 'style': s.style, 'emotional_pacing': s.emotional_pacing || 'N/A',
+        if (!scriptData || !scriptData.scenes) return;
+        const dataForSheet = scriptData.scenes.map((scene, index) => ({
+            'STT': index + 1,
+            'prompt': scene.video_prompt,
+            'TRẠNG THÁI': '',
         }));
-        const worksheet = xlsx.utils.json_to_sheet(dataForSheet);
-        worksheet['!cols'] = [{ wch: 15 }, { wch: 150 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 }];
-        const workbook = xlsx.utils.book_new();
-        xlsx.utils.book_append_sheet(workbook, worksheet, 'Scenes');
-        xlsx.writeFile(workbook, `${scriptData.production_plan.title.replace(/\s+/g, '_')}_script.xlsx`);
+        const ws = xlsx.utils.json_to_sheet(dataForSheet);
+        ws['!cols'] = [ { wch: 5 }, { wch: 150 }, { wch: 20 } ];
+        const wb = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(wb, ws, 'Prompts');
+        xlsx.writeFile(wb, `${scriptData.production_plan.title.replace(/\s+/g, '_')}_prompts.xlsx`);
     };
 
     const handleElaborateScene = async (sceneIndex) => {
@@ -232,23 +219,27 @@ const AffiliateScriptDisplay = ({
             <div className="flex flex-wrap justify-between items-center gap-4 mb-2">
                 <h3 className="text-2xl font-bold text-gray-200">Các Phân Cảnh</h3>
                 <div className="flex items-center flex-wrap gap-2">
-                     <button onClick={handleElaborateAll} disabled={isElaboratingAll} className="flex items-center px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs disabled:bg-amber-900 disabled:cursor-wait">
-                        <ElaborateIcon className="w-4 h-4 mr-2" /> {isElaboratingAll ? 'Đang xử lý...' : 'Chi tiết hóa Toàn bộ'}
+                    <button onClick={handleDownloadTxtScenesOnly} className="flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
+                        <DownloadIcon className="w-4 h-4 mr-2" /> Tải File TXT
                     </button>
-                    <button onClick={handleDownloadTxt} className="flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs"><DownloadIcon className="w-4 h-4 mr-2"/>Tải File TXT</button>
-                    <button onClick={handleDownloadXlsx} className="flex items-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs"><DownloadIcon className="w-4 h-4 mr-2"/>Tải File Excel</button>
+                    <button onClick={handleDownloadXlsx} className="flex items-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
+                        <DownloadIcon className="w-4 h-4 mr-2" /> Tải File Excel
+                    </button>
+                    <button onClick={handleCopyJson} className="flex items-center px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
+                        <ClipboardIcon className="w-4 h-4 mr-2" /> Sao chép JSON
+                    </button>
                 </div>
             </div>
 
             <div className="max-h-[75vh] overflow-y-auto space-y-4 pr-2">
                 {scriptData.scenes.map((scene, index) => (
-                    <div key={scene.scene_number} className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/10">
+                    <div key={scene.scene_number} className="bg-blue-900 border border-blue-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/10">
                         <div className="p-4 space-y-4 flex flex-col">
                            <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-lg text-indigo-400">Cảnh {scene.scene_number}</h4>
                                 <div className="text-right">
-                                    <span className="text-xs font-semibold bg-gray-700 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
-                                    <span className="text-xs font-semibold bg-gray-700 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
+                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
+                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
                                 </div>
                             </div>
                             <div className="flex-grow space-y-4 text-sm">
@@ -258,18 +249,18 @@ const AffiliateScriptDisplay = ({
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-grow">
                                                 <textarea
-                                                    className="w-full p-2 bg-gray-900/50 border border-gray-700 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 transition resize-y min-h-[120px] whitespace-pre-wrap"
+                                                    className="w-full p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 transition resize-y min-h-[120px] whitespace-pre-wrap"
                                                     value={scene.video_prompt}
                                                     onChange={(e) => handleUpdateScene(index, { video_prompt: e.target.value })}
                                                 />
                                                 {scene.translatedPrompt && (
-                                                    <div className="mt-2 p-2 bg-gray-900/50 border border-gray-700 rounded-md text-sm text-gray-300">
+                                                    <div className="mt-2 p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm text-gray-300">
                                                         <p className="whitespace-pre-wrap">{scene.translatedPrompt}</p>
                                                     </div>
                                                 )}
                                             </div>
                                             <div className="flex flex-col space-y-2 flex-shrink-0">
-                                                <button onClick={() => navigator.clipboard.writeText(scene.video_prompt)} className="flex items-center justify-center px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-md transition-colors duration-200 text-xs"><ClipboardIcon className="w-3 h-3 mr-1.5" /> Sao chép</button>
+                                                <button onClick={() => navigator.clipboard.writeText(scene.video_prompt)} className="flex items-center justify-center px-2 py-1 bg-blue-700 hover:bg-blue-600 text-white font-semibold rounded-md transition-colors duration-200 text-xs"><ClipboardIcon className="w-3 h-3 mr-1.5" /> Sao chép</button>
                                                 <button onClick={() => handleTranslate(index)} disabled={scene.isTranslating} className="flex items-center justify-center px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-md transition-colors duration-200 text-xs disabled:bg-sky-800 disabled:cursor-wait"><TranslateIcon className="w-3 h-3 mr-1.5" /> {scene.isTranslating ? '...' : (scene.translatedPrompt ? 'Ẩn' : 'Dịch')}</button>
                                                  <button onClick={() => handleElaborateScene(index)} disabled={scene.isElaborating} className="flex items-center justify-center px-2 py-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-md transition-colors duration-200 text-xs disabled:bg-amber-800 disabled:cursor-wait" title="Kéo dài phân cảnh này"><ElaborateIcon className="w-3 h-3 mr-1.5" /> {scene.isElaborating ? '...' : 'Chi tiết hóa'}</button>
                                             </div>
@@ -279,7 +270,7 @@ const AffiliateScriptDisplay = ({
                                         <strong className="font-semibold text-gray-400 block mb-1">Chỉ đạo Nhịp điệu</strong>
                                         <div className="flex items-center gap-2">
                                             <select
-                                                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 transition disabled:opacity-50"
+                                                className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 transition disabled:opacity-50"
                                                 value={scene.emotional_pacing || 'default'}
                                                 onChange={(e) => handleUpdatePacing(index, e.target.value)}
                                                 disabled={scene.isUpdatingPacing}
@@ -300,7 +291,6 @@ const AffiliateScriptDisplay = ({
 };
 
 
-// FIX: Making children optional to resolve incorrect TypeScript errors.
 const OptionGroup = ({ label, children }: { label: string; children?: React.ReactNode }) => (
     <div className="flex flex-col items-center gap-2">
         <label className="block text-sm font-medium text-slate-400">{label}</label>
@@ -308,13 +298,12 @@ const OptionGroup = ({ label, children }: { label: string; children?: React.Reac
     </div>
 );
 
-// FIX: Making children optional to resolve incorrect TypeScript errors.
 const OptionButton = ({ selected, onClick, children }: { selected: boolean; onClick: () => void; children?: React.ReactNode }) => (
     <button
         onClick={onClick}
-        className={`px-6 py-3 text-lg rounded-lg font-semibold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500 transform active:translate-y-0.5 ${selected
+        className={`px-6 py-3 text-lg rounded-lg font-semibold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-950 focus:ring-blue-500 transform active:translate-y-0.5 ${selected
             ? 'bg-blue-600 text-white border-b-4 border-blue-800 shadow-xl'
-            : 'bg-slate-700 text-slate-300 border-b-4 border-slate-800 hover:bg-slate-600 shadow-lg'
+            : 'bg-blue-800 text-blue-200 border-b-4 border-blue-900 hover:bg-blue-700 shadow-lg'
             }`}
     >
         {children}
@@ -399,17 +388,17 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform]);
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
+        <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
             <div className="w-full max-w-7xl mx-auto flex flex-col gap-8">
                 <header className="text-center relative">
-                    <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center bg-slate-800/60 backdrop-blur-sm border border-cyan-500 text-cyan-300 font-semibold px-4 py-2 rounded-lg shadow-lg shadow-cyan-500/10 hover:bg-cyan-500/20 hover:text-cyan-200 hover:shadow-cyan-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center bg-blue-900/50 backdrop-blur-sm border border-cyan-500 text-cyan-300 font-semibold px-4 py-2 rounded-lg shadow-lg shadow-cyan-500/10 hover:bg-cyan-500/20 hover:text-cyan-200 hover:shadow-cyan-500/30 transition-all duration-300 transform hover:-translate-y-1">
                         <BackIcon className="w-5 h-5 mr-2" />
                         <span>Quay Lại</span>
                     </button>
                     <h1 className="text-4xl lg:text-5xl font-bold">
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">MASTER RIVER SƠN AFFILIATE</span>
                     </h1>
-                    <p className="text-slate-400 mt-2">
+                    <p className="text-blue-200 mt-2">
                         Ứng dụng tạo ảnh sản phẩm và kịch bản quảng cáo chi tiết cho Tiktok và Facebook.
                     </p>
                 </header>
@@ -417,7 +406,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 <main className="flex flex-col gap-8 w-full">
                     { !generatedData && (
                         <>
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
+                            <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
                                 <OptionGroup label="Nền tảng">
                                     <OptionButton selected={platform === 'tiktok'} onClick={() => setPlatform('tiktok')}>TikTok</OptionButton>
                                     <OptionButton selected={platform === 'facebook'} onClick={() => setPlatform('facebook')}>Facebook</OptionButton>
@@ -434,7 +423,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                     <select
                                         value={numberOfResults}
                                         onChange={(e) => setNumberOfResults(Number(e.target.value))}
-                                        className="bg-slate-700 text-slate-200 border-b-4 border-slate-800 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="bg-blue-800 text-blue-200 border-b-4 border-blue-900 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         {[...Array(5)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
                                     </select>
@@ -452,7 +441,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             onChange={(e) => setOutfitSuggestion(e.target.value)}
                                             disabled={generationMode === 'fashion'}
                                             placeholder={generationMode === 'fashion' ? 'AI sẽ tự động phối đồ' : 'VD: váy maxi đi biển...'}
-                                            className="w-full bg-slate-900/70 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
                                         />
                                     </div>
                                     <div className="flex flex-col">
@@ -463,7 +452,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             value={backgroundSuggestion}
                                             onChange={(e) => setBackgroundSuggestion(e.target.value)}
                                             placeholder="VD: quán cafe sân vườn, bãi biển hoàng hôn..."
-                                            className="w-full bg-slate-900/70 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>
                                 </div>
@@ -477,7 +466,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             onChange={(e) => setProductInfo(e.target.value)}
                                             placeholder={generationMode === 'fashion' ? 'Ví dụ: Áo sơ mi lụa, chống nhăn...' : 'Ví dụ: Son môi siêu lì, giữ màu 8 tiếng...'}
                                             rows={4}
-                                            className="w-full bg-slate-900/70 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>
                                     <div className="flex flex-col">
@@ -488,7 +477,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             onChange={(e) => setProductSuggestion(e.target.value)}
                                             placeholder="Ví dụ: hợp với giới trẻ, nhấn mạnh chống nước..."
                                             rows={4}
-                                            className="w-full bg-slate-900/70 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>
                                 </div>
@@ -515,7 +504,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     {isLoading && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {Array.from({ length: numberOfResults }).map((_, index) => (
-                                <div key={index} className="bg-slate-800/50 border border-slate-700 rounded-xl p-4"><SkeletonLoader /></div>
+                                <div key={index} className="bg-blue-900/50 border border-blue-800 rounded-xl p-4"><SkeletonLoader /></div>
                             ))}
                         </div>
                     )}
@@ -523,8 +512,8 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     {!isLoading && generatedData && generatedData.length > 0 && (
                         <div className="w-full max-w-7xl mx-auto mt-12 space-y-8">
                              {generatedData.map((data, index) => (
-                                <div key={data.id} className="bg-gray-900/50 p-6 rounded-xl shadow-lg border border-gray-800">
-                                    <h2 className="text-2xl font-bold text-gray-200 mb-4 pb-2 border-b border-gray-700">Kết quả {index + 1}</h2>
+                                <div key={data.id} className="bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800">
+                                    <h2 className="text-2xl font-bold text-gray-200 mb-4 pb-2 border-b border-blue-700">Kết quả {index + 1}</h2>
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                         <div className="lg:col-span-1">
                                             <h3 className="text-xl font-semibold text-gray-300 mb-3">Ảnh quảng cáo</h3>

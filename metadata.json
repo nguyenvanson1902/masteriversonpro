@@ -1,7 +1,5 @@
 {
   "name": "MASTER RIVER SƠN",
   "description": "Một công cụ tạo prompt chi tiết để sản xuất video bằng AI, bao gồm Hồ Sơ Nhân Vật và Kịch Bản Phân Cảnh nhiều cảnh dựa trên cài đặt của người dùng.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
+  "requestFramePermissions": []
 }

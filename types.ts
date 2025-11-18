@@ -42,16 +42,29 @@ export interface ImageFile {
 }
 
 export interface CharacterProfile {
+    id: string;
     name: string;
     description: string;
     soundCues: string;
+    images: {
+        base64: string;
+        mimeType: string;
+    }[];
+    isAnalyzing?: boolean;
 }
 
 export interface PropProfile {
+    id: string;
     name: string;
     description: string;
     soundCues: string;
+    images?: {
+        base64: string;
+        mimeType: string;
+    }[];
+    isAnalyzing?: boolean;
 }
+
 
 export interface DirectorProductionPlan {
     title: string;
