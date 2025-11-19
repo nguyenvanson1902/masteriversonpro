@@ -27,6 +27,7 @@ import {
     CheckCircleIcon,
     XCircleIcon,
     WandIcon,
+    CubeIcon,
 } from './components/Icons';
 import * as geminiService from './services/geminiService';
 
@@ -57,22 +58,22 @@ const ApiKeyModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeInUp">
+            <div className="bg-lime-900 rounded-xl shadow-2xl w-full max-w-2xl border border-lime-700">
                 <div className="p-6">
-                    <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
-                    <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
+                    <h2 className="text-xl font-bold text-lime-100">Quản lý API Keys</h2>
+                    <p className="text-lime-300/70 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
                     <textarea
                         value={keysInput}
                         onChange={(e) => setKeysInput(e.target.value)}
                         placeholder="AIzaSy..."
                         rows={8}
-                        className="w-full p-3 bg-blue-950 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 text-gray-200 font-mono"
+                        className="w-full p-3 bg-lime-950 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-400 text-lime-100 font-mono placeholder-lime-800"
                     />
                 </div>
-                <div className="bg-blue-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
-                    <button onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white font-semibold rounded-lg">Hủy</button>
-                    <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg">Lưu Keys</button>
+                <div className="bg-lime-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
+                    <button onClick={onClose} className="px-4 py-2 text-lime-300 hover:text-white font-semibold rounded-lg transition-colors">Hủy</button>
+                    <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-lg shadow-lg shadow-lime-500/20 transition-all">Lưu Keys</button>
                 </div>
             </div>
         </div>
@@ -124,10 +125,10 @@ const LoginPage = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-blue-950 text-gray-100 p-4">
+        <div className="flex items-center justify-center min-h-screen bg-lime-950 text-lime-100 p-4">
             <div className="w-full max-w-lg mx-auto">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-                    <h1 className="text-2xl font-black text-gray-100 whitespace-nowrap text-aurora-glow-7-colors">
+                    <h1 className="text-2xl font-black text-lime-100 whitespace-nowrap text-aurora-glow-7-colors">
                         RIVER SƠN MASTER
                     </h1>
                     <div className="flex items-center justify-end flex-wrap gap-3">
@@ -145,22 +146,22 @@ const LoginPage = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
                         </a>
                     </div>
                 </div>
-                <div className="bg-blue-900 p-8 rounded-xl shadow-lg border border-blue-800">
+                <div className="bg-lime-900 p-8 rounded-xl shadow-lg border border-lime-700">
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div>
-                            <label htmlFor="password-input" className="block text-sm font-semibold mb-2 text-gray-300">Mã Truy Cập</label>
-                            <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3"><KeyIcon className="w-5 h-5 text-gray-400" /></span><input type="password" id="password-input" value={accessCode} onChange={(e) => { setAccessCode(e.target.value); if (error) setError(null); }} className={`w-full p-3 pl-10 bg-blue-800 border rounded-md transition-shadow duration-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500 ${error ? 'border-red-500' : 'border-blue-700'}`} placeholder="Nhập mã của bạn..." autoFocus disabled={isLoading} /></div>
+                            <label htmlFor="password-input" className="block text-sm font-semibold mb-2 text-lime-300">Mã Truy Cập</label>
+                            <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3"><KeyIcon className="w-5 h-5 text-lime-400" /></span><input type="password" id="password-input" value={accessCode} onChange={(e) => { setAccessCode(e.target.value); if (error) setError(null); }} className={`w-full p-3 pl-10 bg-lime-800 border rounded-md transition-shadow duration-200 placeholder-lime-600 focus:outline-none focus:ring-2 focus:ring-lime-400 ${error ? 'border-red-500' : 'border-lime-600'}`} placeholder="Nhập mã của bạn..." autoFocus disabled={isLoading} /></div>
                             {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
                         </div>
-                        <button type="submit" disabled={!accessCode || isLoading} className="w-full flex items-center justify-center px-6 py-3 bg-lime-600 hover:bg-lime-700 disabled:bg-lime-900 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors duration-200 animate-aurora-button">{isLoading ? <> <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />Đang kiểm tra...</> : <>Truy cập <ArrowRightIcon className="w-5 h-5 ml-2" /></> }</button>
+                        <button type="submit" disabled={!accessCode || isLoading} className="w-full flex items-center justify-center px-6 py-3 bg-lime-600 hover:bg-lime-500 disabled:bg-lime-800 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 animate-aurora-button shadow-lg shadow-lime-500/30">{isLoading ? <> <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />Đang kiểm tra...</> : <>Truy cập <ArrowRightIcon className="w-5 h-5 ml-2" /></> }</button>
                     </form>
                     <a href="https://www.facebook.com/NguyenVanSonss" target="_blank" rel="noopener noreferrer" className="w-full mt-4 flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors duration-200"><FacebookIcon className="w-5 h-5 mr-2" />Lấy Mã Truy Cập Miễn Phí</a>
                 </div>
-                <footer className="text-center mt-16 text-gray-500 text-sm flex flex-col items-center">
-                    <a href="https://www.facebook.com/NguyenVanSonss" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-lime-400 transition-colors">PHÁT TRIỂN BỞI RIVER SƠN MASTER</a>
+                <footer className="text-center mt-16 text-lime-500/70 text-sm flex flex-col items-center">
+                    <a href="https://www.facebook.com/NguyenVanSonss" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-lime-300 transition-colors">PHÁT TRIỂN BỞI RIVER SƠN MASTER</a>
                     <p className="mt-4">Thêm từ khóa phủ định vào cuối mỗi prompt</p>
                     <p>Donate để chúng tôi có động lực phát triển App đẳng cấp hơn nữa, xin cảm ơn!</p>
-                    <img alt="QR Code for Bank Transfer" className="w-64 h-64 rounded-lg shadow-lg border-2 border-slate-600 mt-4" src="https://img.vietqr.io/image/TCB-19037518595018-compact2.png?amount=100000&addInfo=TOOL%20AFFILIATE%20VINH%20VIEN&accountName=NGUYEN%20VAN%20SON" />
+                    <img alt="QR Code for Bank Transfer" className="w-64 h-64 rounded-lg shadow-lg border-2 border-lime-700 mt-4" src="https://img.vietqr.io/image/TCB-19037518595018-compact2.png?amount=100000&addInfo=TOOL%20AFFILIATE%20VINH%20VIEN&accountName=NGUYEN%20VAN%20SON" />
                 </footer>
             </div>
         </div>
@@ -176,17 +177,17 @@ interface AppCardProps {
     index: number;
 }
 const AppCard: React.FC<AppCardProps> = ({ title, description, icon, onClick, disabled = false, index }) => {
-    const baseClasses = "relative group w-full p-6 bg-blue-900 rounded-xl border border-blue-800 flex flex-col items-center text-center transition-all duration-300 animate-fadeInUp";
-    const enabledClasses = "hover:border-lime-400 hover:shadow-[0_0_35px_-10px_rgba(132,204,22,0.5)] hover:-translate-y-2 cursor-pointer";
+    const baseClasses = "relative group w-full p-6 bg-lime-900 rounded-xl border border-lime-800 flex flex-col items-center text-center transition-all duration-300 animate-fadeInUp";
+    const enabledClasses = "hover:border-lime-400 hover:shadow-[0_0_35px_-10px_rgba(132,204,22,0.5)] hover:-translate-y-2 cursor-pointer hover:bg-lime-800";
     const disabledClasses = "opacity-50 cursor-not-allowed";
     const Component = disabled ? 'div' : 'button';
 
     return (
         <Component onClick={onClick} className={`${baseClasses} ${disabled ? disabledClasses : enabledClasses}`} style={{ animationDelay: `${index * 150}ms` }} disabled={disabled}>
             {disabled && (<div className="absolute top-2 right-2 bg-yellow-500 text-gray-900 text-xs font-bold px-2 py-1 rounded-full">Sắp ra mắt</div>)}
-            <div className="mb-4 text-lime-400 group-hover:text-lime-300 transition-colors">{icon}</div>
-            <h3 className="text-xl font-bold text-gray-100 mb-2">{title}</h3>
-            <p className="text-sm text-gray-400 flex-grow">{description}</p>
+            <div className="mb-4 text-lime-400 group-hover:text-lime-300 transition-colors transform group-hover:scale-110 duration-300">{icon}</div>
+            <h3 className="text-xl font-bold text-lime-100 mb-2 group-hover:text-white">{title}</h3>
+            <p className="text-sm text-lime-300/70 flex-grow group-hover:text-lime-200">{description}</p>
             {!disabled && (<div className="mt-4 flex items-center text-lime-400 group-hover:text-white transition-colors font-semibold">Vào ứng dụng<ArrowRightIcon className="w-5 h-5 ml-2 transform transition-transform group-hover:translate-x-1" /></div>)}
         </Component>
     );
@@ -210,9 +211,14 @@ const AppSelectorPage = ({ onSelectDirectorApp, onSelectStorytellerApp, onSelect
         { title: "AI SEO YouTube", description: "Tối ưu hóa video của bạn cho YouTube với tiêu đề, mô tả và từ khóa do AI tạo.", icon: <SparklesIcon className="w-20 h-20" />, onClick: onSelectSeoYoutubeApp, disabled: false, },
         { title: "Tạo Thumbnail AI", description: "Thiết kế thumbnail YouTube, Facebook hấp dẫn bằng AI, có thể sửa hoặc tạo mới.", icon: <ImageIcon className="w-20 h-20" />, onClick: onSelectThumbnailApp, disabled: false },
         { title: "Trợ lý tạo Prompt Video", description: "Xây dựng prompt video chi tiết một cách nhanh chóng với các trường gợi ý.", icon: <WandIcon className="w-20 h-20" />, onClick: onSelectPromptWizardApp, disabled: false },
+        // 4 New Coming Soon Apps
+        { title: "Sắp Ra Mắt", description: "Tính năng AI mới đang được phát triển. Vui lòng quay lại sau.", icon: <CubeIcon className="w-20 h-20" />, onClick: () => {}, disabled: true },
+        { title: "Sắp Ra Mắt", description: "Tính năng AI mới đang được phát triển. Vui lòng quay lại sau.", icon: <CubeIcon className="w-20 h-20" />, onClick: () => {}, disabled: true },
+        { title: "Sắp Ra Mắt", description: "Tính năng AI mới đang được phát triển. Vui lòng quay lại sau.", icon: <CubeIcon className="w-20 h-20" />, onClick: () => {}, disabled: true },
+        { title: "Sắp Ra Mắt", description: "Tính năng AI mới đang được phát triển. Vui lòng quay lại sau.", icon: <CubeIcon className="w-20 h-20" />, onClick: () => {}, disabled: true },
     ];
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-blue-950 text-gray-100 p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-lime-950 text-lime-100 p-4 sm:p-6 lg:p-8">
             <div className="text-center mb-12">
                 <h1 className="text-3xl sm:text-4xl font-black py-2 text-aurora-glow-7-colors">CHÀO MỪNG ĐẾN VỚI RIVER SƠN MASTER</h1>
                 <div className="flex items-center justify-center flex-wrap gap-3 mt-4">
@@ -228,24 +234,24 @@ const AppSelectorPage = ({ onSelectDirectorApp, onSelectStorytellerApp, onSelect
                     <a href="https://zalo.me/0986196383" target="_blank" rel="noopener noreferrer" aria-label="Zalo" className="flex items-center justify-center w-11 h-11 rounded-lg text-white transition-all duration-300 transform hover:scale-115 bg-blue-500 hover:bg-blue-600">
                         <svg viewBox="0 0 512 512" fill="currentColor" className="w-7 h-7"><path d="M256,0C114.615,0,0,105.29,0,236.235c0,61.905,27.36,118.42,72.715,158.82L29.92,488.085l129.58-31.54 c30.555,9.21,63.15,14.155,96.5,14.155C397.385,470.7,512,365.41,512,234.465C512,105.29,397.385,0,256,0z M176.435,329.515 c-24.02,0-43.5-19.48-43.5-43.5s19.48-43.5,43.5-43.5s43.5,19.48,43.5,43.5S200.455,329.515,176.435,329.515z M335.565,329.515 c-24.02,0-43.5-19.48-43.5-43.5s19.48-43.5,43.5-43.5s43.5,19.48,43.5,43.5S359.585,329.515,335.565,329.515z"></path></svg>
                     </a>
-                    <button onClick={onOpenApiKeyModal} className="flex items-center bg-white/60 backdrop-blur-sm border border-blue-500 text-blue-600 font-bold px-4 py-2 rounded-lg shadow-lg shadow-blue-500/10 hover:bg-blue-500/10 hover:text-blue-700 hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1 whitespace-nowrap">
+                    <button onClick={onOpenApiKeyModal} className="flex items-center bg-white/60 backdrop-blur-sm border border-lime-500 text-lime-800 font-bold px-4 py-2 rounded-lg shadow-lg shadow-lime-500/10 hover:bg-lime-500/20 hover:text-lime-900 hover:shadow-lime-500/20 transition-all duration-300 transform hover:-translate-y-1 whitespace-nowrap">
                         <ApiKeySettingsIcon className="w-5 h-5 mr-2" /> Cài đặt API Key
                     </button>
                 </div>
-                <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">Chọn một ứng dụng để bắt đầu hành trình sáng tạo của bạn.</p>
+                <p className="mt-4 text-lg text-lime-200 max-w-2xl mx-auto">Chọn một ứng dụng để bắt đầu hành trình sáng tạo của bạn.</p>
             </div>
             <div className="w-full max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {apps.map((app, index) => (
-                        <AppCard key={app.title} {...app} index={index} />
+                        <AppCard key={index} {...app} index={index} />
                     ))}
                 </div>
             </div>
-            <footer className="text-center mt-16 text-gray-500 text-sm flex flex-col items-center">
-                <a href="https://www.facebook.com/NguyenVanSonss" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-lime-400 transition-colors">PHÁT TRIỂN BỞI RIVER SƠN MASTER</a>
+            <footer className="text-center mt-16 text-lime-500/70 text-sm flex flex-col items-center">
+                <a href="https://www.facebook.com/NguyenVanSonss" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-lime-300 transition-colors">PHÁT TRIỂN BỞI RIVER SƠN MASTER</a>
                 <p className="mt-4">Thêm từ khóa phủ định vào cuối mỗi prompt</p>
                 <p>Donate để chúng tôi có động lực phát triển App đẳng cấp hơn nữa, xin cảm ơn!</p>
-                <img alt="QR Code for Bank Transfer" className="w-64 h-64 rounded-lg shadow-lg border-2 border-slate-600 mt-4" src="https://img.vietqr.io/image/TCB-19037518595018-compact2.png?amount=100000&addInfo=TOOL%20AFFILIATE%20VINH%20VIEN&accountName=NGUYEN%20VAN%20SON" />
+                <img alt="QR Code for Bank Transfer" className="w-64 h-64 rounded-lg shadow-lg border-2 border-lime-700 mt-4" src="https://img.vietqr.io/image/TCB-19037518595018-compact2.png?amount=100000&addInfo=TOOL%20AFFILIATE%20VINH%20VIEN&accountName=NGUYEN%20VAN%20SON" />
             </footer>
         </div>
     );
@@ -253,10 +259,10 @@ const AppSelectorPage = ({ onSelectDirectorApp, onSelectStorytellerApp, onSelect
 
 
 const LoadingFallback = () => (
-    <div className="flex items-center justify-center min-h-screen bg-blue-950 text-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-lime-950 text-lime-100 p-4">
         <div className="flex flex-col items-center gap-4">
             <Loader2 className="animate-spin h-8 w-8 text-lime-400" />
-            <span className="text-lg font-semibold text-gray-300">Đang tải ứng dụng...</span>
+            <span className="text-lg font-semibold text-lime-200">Đang tải ứng dụng...</span>
         </div>
     </div>
 );
@@ -356,10 +362,10 @@ const App = () => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-blue-950 text-gray-100 p-4">
+            <div className="flex items-center justify-center min-h-screen bg-lime-950 text-lime-100 p-4">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="animate-spin h-8 w-8 text-lime-400" />
-                    <span className="text-lg font-semibold text-gray-300">Đang kiểm tra phiên đăng nhập...</span>
+                    <span className="text-lg font-semibold text-lime-200">Đang kiểm tra phiên đăng nhập...</span>
                 </div>
             </div>
         );

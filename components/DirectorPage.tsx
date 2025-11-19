@@ -1,3 +1,4 @@
+
 // This is a large component file that includes sub-components for organization
 // as per the 'handful of files' constraint. Sub-components are defined outside
 // the main DirectorPage component to prevent re-rendering issues.
@@ -65,21 +66,21 @@ const ApiKeyModal = ({
 
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-700">
+            <div className="bg-lime-900 rounded-xl shadow-2xl w-full max-w-2xl border border-lime-700">
                 <div className="p-6">
-                    <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
-                    <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
+                    <h2 className="text-xl font-bold text-lime-100">Quản lý API Keys</h2>
+                    <p className="text-lime-300/70 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
                     <textarea
                         value={keysInput}
                         onChange={(e) => setKeysInput(e.target.value)}
                         placeholder="AIzaSy..."
                         rows={8}
-                        className="w-full p-3 bg-blue-950 border border-blue-600 rounded-md focus:ring-2 focus:ring-lime-500 text-gray-200 font-mono"
+                        className="w-full p-3 bg-lime-950 border border-lime-600 rounded-md focus:ring-2 focus:ring-lime-400 text-lime-100 font-mono placeholder-lime-800"
                     />
                 </div>
-                <div className="bg-blue-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
-                    <button onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white font-semibold rounded-lg">Hủy</button>
-                    <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg">Lưu Keys</button>
+                <div className="bg-lime-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
+                    <button onClick={onClose} className="px-4 py-2 text-lime-300 hover:text-white font-semibold rounded-lg transition-colors">Hủy</button>
+                    <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-lg shadow-lg shadow-lime-500/20">Lưu Keys</button>
                 </div>
             </div>
         </div>
@@ -94,8 +95,8 @@ const RawJsonViewer = ({ scriptData }: { scriptData: any }) => {
     };
 
     return (
-        <div className="bg-blue-900 rounded-xl shadow-lg border border-blue-800">
-            <div className="p-4 border-b border-blue-800 flex justify-between items-center">
+        <div className="bg-lime-900 rounded-xl shadow-lg border border-lime-800">
+            <div className="p-4 border-b border-lime-800 flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-gray-200">Dữ Liệu JSON Thô</h3>
                 <div className="flex items-center space-x-2">
                     <button onClick={handleCopyJson} className="flex items-center px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-200 text-xs" aria-label="Sao chép JSON">
@@ -103,18 +104,18 @@ const RawJsonViewer = ({ scriptData }: { scriptData: any }) => {
                     </button>
                 </div>
             </div>
-            <div className="p-4 text-xs text-gray-300 overflow-y-auto max-h-96 space-y-4">
+            <div className="p-4 text-xs text-lime-200 overflow-y-auto max-h-96 space-y-4">
                 <div>
-                    <h4 className="font-mono text-sm text-gray-400 mb-2">kế hoạch sản xuất:</h4>
-                    <pre className="p-3 bg-blue-950 rounded-md overflow-x-auto">
+                    <h4 className="font-mono text-sm text-lime-400 mb-2">kế hoạch sản xuất:</h4>
+                    <pre className="p-3 bg-lime-950 rounded-md overflow-x-auto">
                         <code>{JSON.stringify(scriptData.production_plan, null, 2)}</code>
                     </pre>
                 </div>
                 <div>
-                    <h4 className="font-mono text-sm text-gray-400 mb-2">các cảnh:</h4>
+                    <h4 className="font-mono text-sm text-lime-400 mb-2">các cảnh:</h4>
                     {scriptData.scenes.map((scene: any, index: number) => (
                         <div key={index} className="mb-2">
-                            <pre className="p-3 bg-blue-950 rounded-md overflow-x-auto">
+                            <pre className="p-3 bg-lime-950 rounded-md overflow-x-auto">
                                 <code>{JSON.stringify(scene, null, 2)}</code>
                             </pre>
                         </div>
@@ -259,7 +260,7 @@ const ScriptEditor = ({
                 </p>
             </div>
             <div className="flex flex-wrap justify-between items-center gap-4 mb-2">
-                <h3 className="text-2xl font-bold text-gray-200">Các Phân Cảnh</h3>
+                <h3 className="text-2xl font-bold text-lime-200">Các Phân Cảnh</h3>
                  <div className="flex items-center flex-wrap gap-2">
                     <button onClick={handleDownloadTxtScenesOnly} className="flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
                         <DownloadIcon className="w-4 h-4 mr-2" /> Tải File TXT
@@ -275,29 +276,29 @@ const ScriptEditor = ({
 
             <div className="max-h-[75vh] overflow-y-auto space-y-4 pr-2">
                 {scriptData.scenes.map((scene: any, index: number) => (
-                    <div key={scene.scene_number} className="bg-blue-900 border border-blue-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-lime-500/10">
+                    <div key={scene.scene_number} className="bg-lime-900 border border-lime-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-lime-500/10">
                         <div className="p-4 space-y-4 flex flex-col">
                            <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-lg text-lime-400">Cảnh {scene.scene_number}</h4>
                                 <div className="text-right">
-                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
-                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
+                                    <span className="text-xs font-semibold bg-lime-800 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
+                                    <span className="text-xs font-semibold bg-lime-800 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
                                 </div>
                             </div>
                             <div className="flex-grow space-y-4 text-sm">
                                 <div className="space-y-3">
                                     <div>
-                                        <strong className="font-semibold text-gray-400 block mb-1">Prompt Video (Đã bao gồm lời thoại)</strong>
+                                        <strong className="font-semibold text-lime-200 block mb-1">Prompt Video (Đã bao gồm lời thoại)</strong>
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-grow">
                                                 <textarea
-                                                    className="w-full p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-lime-500 transition resize-y min-h-[180px] whitespace-pre-wrap"
+                                                    className="w-full p-2 bg-lime-950/50 border border-lime-700 rounded-md text-sm placeholder-lime-700 focus:ring-2 focus:ring-lime-500 transition resize-y min-h-[180px] whitespace-pre-wrap text-lime-100"
                                                     aria-label={`Prompt Video cho Cảnh ${scene.scene_number}`}
                                                     value={scene.video_prompt}
                                                     onChange={(e) => handleUpdateScene(index, { video_prompt: e.target.value })}
                                                 />
                                                 {scene.translatedPrompt && (
-                                                    <div className="mt-2 p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm text-gray-300">
+                                                    <div className="mt-2 p-2 bg-lime-950/50 border border-lime-700 rounded-md text-sm text-gray-300">
                                                         <p className="whitespace-pre-wrap">{scene.translatedPrompt}</p>
                                                     </div>
                                                 )}
@@ -316,10 +317,10 @@ const ScriptEditor = ({
                                         </div>
                                     </div>
                                     <div>
-                                        <strong className="font-semibold text-gray-400 block mb-1">Chỉ đạo Nhịp điệu</strong>
+                                        <strong className="font-semibold text-lime-200 block mb-1">Chỉ đạo Nhịp điệu</strong>
                                         <div className="flex items-center gap-2">
                                             <select
-                                                className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md text-sm focus:ring-2 focus:ring-lime-500 transition disabled:opacity-50"
+                                                className="w-full p-2 bg-lime-800 border border-lime-700 rounded-md text-sm focus:ring-2 focus:ring-lime-500 transition disabled:opacity-50 text-lime-100"
                                                 value={scene.emotional_pacing || 'default'}
                                                 onChange={(e) => handleUpdatePacing(index, e.target.value)}
                                                 disabled={scene.isUpdatingPacing}
@@ -332,7 +333,7 @@ const ScriptEditor = ({
                                 </div>
                             </div>
                              {/* Video Generation Section */}
-                            <div className="mt-4 pt-4 border-t border-blue-800">
+                            <div className="mt-4 pt-4 border-t border-lime-800">
                                 {(!scene.videoGenerationStatus || scene.videoGenerationStatus === 'idle') && (
                                     <button 
                                         onClick={() => handleGenerateVideo(index)}
@@ -342,7 +343,7 @@ const ScriptEditor = ({
                                     </button>
                                 )}
                                 {(scene.videoGenerationStatus === 'generating' || scene.videoGenerationStatus === 'polling') && (
-                                    <div className="flex items-center justify-center p-3 bg-blue-800/50 rounded-lg text-gray-300">
+                                    <div className="flex items-center justify-center p-3 bg-lime-800/50 rounded-lg text-gray-300">
                                         <Loader2 className="animate-spin w-5 h-5 mr-3"/>
                                         <p className="text-sm font-semibold">
                                             {scene.videoGenerationStatus === 'generating' ? 'Đang khởi tạo...' : 'Đang xử lý video... (có thể mất vài phút)'}
@@ -856,7 +857,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
 
 
     return (
-        <div className="min-h-screen bg-blue-950 text-gray-100 font-sans p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen bg-lime-950 text-lime-100 font-sans p-4 sm:p-6 lg:p-8">
             <ApiKeyModal
                 isOpen={isApiKeyModalOpen}
                 onClose={() => setIsApiKeyModalOpen(false)}
@@ -874,14 +875,14 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
             />
             <div className="container mx-auto">
                 <header className="text-center mb-10 relative">
-                     <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-blue-900 hover:bg-blue-800 rounded-full transition-colors" aria-label="Quay lại">
+                     <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-lime-900 hover:bg-lime-800 rounded-full transition-colors" aria-label="Quay lại">
                         <BackIcon className="w-6 h-6 text-gray-300" />
                     </button>
                     <h1 className="text-5xl mb-2 font-black text-aurora-glow-7-colors">RIVER SƠN MASTER</h1>
                     <h1 className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lime-400 via-green-400 to-emerald-500 py-2">
                         DIRECTOR
                     </h1>
-                    <p className="mt-4 text-lg text-gray-300 max-w-7xl mx-auto">
+                    <p className="mt-4 text-lg text-lime-200 max-w-7xl mx-auto">
                         Biến ý tưởng thành kịch bản, trực quan hóa bằng storyboard, và tinh chỉnh qua trò chuyện.
                     </p>
                      <div className="mt-4 flex justify-center">
@@ -894,34 +895,34 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
 
                  <main>
                     {/* Project Management */}
-                     <div className="w-full max-w-7xl mx-auto bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800 mb-8">
+                     <div className="w-full max-w-7xl mx-auto bg-lime-900/50 p-6 rounded-xl shadow-lg border border-lime-800 mb-8">
                         <div className="flex items-center mb-6">
                             <FileIcon className="w-6 h-6 mr-3 text-yellow-400" />
-                            <h2 className="text-xl font-bold text-gray-200">Quản lý Dự án</h2>
+                            <h2 className="text-xl font-bold text-lime-100">Quản lý Dự án</h2>
                         </div>
                         <div className="grid grid-cols-1 md:max-w-lg mx-auto gap-6">
                             {/* API Key Card */}
-                            <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-800 flex flex-col">
-                                <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center"><KeyIcon className="w-5 h-5 mr-2 text-yellow-400" />Quản lý API Key (Hỗ trợ nhiều Key)</h3>
+                            <div className="bg-lime-950/50 p-4 rounded-lg border border-lime-700 flex flex-col">
+                                <h3 className="text-lg font-semibold text-lime-200 mb-4 flex items-center"><KeyIcon className="w-5 h-5 mr-2 text-yellow-400" />Quản lý API Key (Hỗ trợ nhiều Key)</h3>
                                 <div className="flex-grow flex flex-col">
                                     <div className="space-y-2 mb-4">
                                         {apiKeys.length > 0 ? apiKeys.map(key => {
                                             const status = apiKeyStatuses[key] || 'checking';
                                             const { text, color, icon } = statusMap[status];
                                             return (
-                                                <div key={key} className="flex items-center justify-between p-2 rounded-md bg-blue-900">
+                                                <div key={key} className="flex items-center justify-between p-2 rounded-md bg-lime-900">
                                                     <div className="flex items-center space-x-3">
                                                          {icon}
-                                                        <span className="text-gray-300 font-mono text-sm">{formatKeyForDisplay(key)}</span>
+                                                        <span className="text-lime-300 font-mono text-sm">{formatKeyForDisplay(key)}</span>
                                                     </div>
                                                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
                                                         {text}
                                                     </span>
                                                 </div>
                                             )
-                                        }) : <p className="text-sm text-gray-400 text-center py-2">Chưa có API Key nào.</p>}
+                                        }) : <p className="text-sm text-lime-400 text-center py-2">Chưa có API Key nào.</p>}
                                     </div>
-                                    <p className="text-xs text-gray-400 mb-4">Ứng dụng sẽ tự động chuyển sang key tiếp theo khi một key hết hạn mức trong ngày.</p>
+                                    <p className="text-xs text-lime-400 mb-4">Ứng dụng sẽ tự động chuyển sang key tiếp theo khi một key hết hạn mức trong ngày.</p>
                                     <button onClick={() => setIsApiKeyModalOpen(true)} className="mt-auto px-3 py-1.5 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm">
                                         {isKeySet ? 'Thêm / Sửa Keys' : 'Nhập API Keys'}
                                     </button>
@@ -933,7 +934,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
 
                     {/* Brainstorm AI Section */}
                     <div className="w-full max-w-7xl mx-auto mb-8">
-                        <div className="bg-blue-900 rounded-xl shadow-lg border border-blue-800">
+                        <div className="bg-lime-900 rounded-xl shadow-lg border border-lime-800">
                             <button 
                                 className="w-full flex justify-between items-center p-4 text-left" 
                                 onClick={() => setIsBrainstormOpen(!isBrainstormOpen)}
@@ -942,12 +943,12 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                             >
                                 <div className="flex items-center">
                                     <SparklesIcon className="w-6 h-6 mr-3 text-lime-400" />
-                                    <h2 className="text-lg font-semibold text-gray-200">Brainstorm Ý Tưởng với AI</h2>
+                                    <h2 className="text-lg font-semibold text-lime-200">Brainstorm Ý Tưởng với AI</h2>
                                 </div>
-                                <ChevronDownIcon className={`w-6 h-6 text-gray-400 transition-transform duration-300 ${isBrainstormOpen ? 'transform rotate-180' : ''}`} />
+                                <ChevronDownIcon className={`w-6 h-6 text-lime-400 transition-transform duration-300 ${isBrainstormOpen ? 'transform rotate-180' : ''}`} />
                             </button>
                             {isBrainstormOpen && (
-                                <div className="border-t border-blue-800">
+                                <div className="border-t border-lime-800">
                                     <div ref={brainstormContainerRef} className="p-4 h-72 overflow-y-auto space-y-4">
                                         {brainstormHistory.map((msg, index) => (
                                             <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -956,7 +957,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                         <SparklesIcon className="w-4 h-4 text-lime-200" />
                                                     </div>
                                                 )}
-                                                <div className={`max-w-md p-3 rounded-lg ${msg.role === 'user' ? 'bg-lime-600 text-white' : 'bg-blue-800 text-gray-200'}`}>
+                                                <div className={`max-w-md p-3 rounded-lg ${msg.role === 'user' ? 'bg-lime-600 text-white' : 'bg-lime-800 text-lime-200'}`}>
                                                     <p className="whitespace-pre-wrap">{msg.content}</p>
                                                     {msg.role === 'model' && msg.content.includes(':') && !msg.content.startsWith('Lỗi:') && (
                                                         <button 
@@ -974,7 +975,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                 <div className="w-6 h-6 rounded-full bg-lime-500 flex-shrink-0 flex items-center justify-center">
                                                     <SparklesIcon className="w-4 h-4 text-lime-200" />
                                                 </div>
-                                                <div className="max-w-md p-3 rounded-lg bg-blue-800 text-gray-200">
+                                                <div className="max-w-md p-3 rounded-lg bg-lime-800 text-lime-200">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-2 h-2 bg-lime-300 rounded-full animate-pulse delay-75"></div>
                                                         <div className="w-2 h-2 bg-lime-300 rounded-full animate-pulse delay-150"></div>
@@ -984,11 +985,11 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="p-4 border-t border-blue-800 flex items-center gap-2">
+                                    <div className="p-4 border-t border-lime-800 flex items-center gap-2">
                                         <input
                                             type="text"
                                             placeholder="Nhập chủ đề..."
-                                            className="flex-grow p-2 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 disabled:bg-blue-900"
+                                            className="flex-grow p-2 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 disabled:bg-lime-900 text-lime-100 placeholder-lime-500"
                                             value={brainstormInput}
                                             onChange={(e) => setBrainstormInput(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleBrainstormSend()}
@@ -1009,15 +1010,15 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                     </div>
                     
                     {/* Main Form Section */}
-                    <div className="w-full max-w-7xl mx-auto bg-blue-900 p-8 rounded-xl shadow-lg border border-blue-800">
+                    <div className="w-full max-w-7xl mx-auto bg-lime-900 p-8 rounded-xl shadow-lg border border-lime-800">
                         <div className="space-y-8">
                             {/* Idea */}
                             <div>
-                                <label htmlFor="user_idea" className="block text-lg font-semibold mb-2 text-gray-200">Ý Tưởng Cốt Lõi (Tùy chọn)</label>
+                                <label htmlFor="user_idea" className="block text-lg font-semibold mb-2 text-lime-200">Ý Tưởng Cốt Lõi (Tùy chọn)</label>
                                 <textarea
                                     id="user_idea"
                                     placeholder="Ví dụ: Một chú mèo cam là chỉ huy của một nhà máy vận chuyển ở Nhật Bản."
-                                    className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-shadow duration-200 text-gray-100 placeholder-gray-400"
+                                    className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-shadow duration-200 text-lime-100 placeholder-lime-400"
                                     rows={3}
                                     value={idea}
                                     onChange={(e) => setIdea(e.target.value)}
@@ -1027,7 +1028,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                             {/* Summary Script */}
                             <div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <label htmlFor="summary_script" className="block text-lg font-semibold text-gray-200">Kịch bản Tóm tắt (Khuyên dùng)</label>
+                                    <label htmlFor="summary_script" className="block text-lg font-semibold text-lime-200">Kịch bản Tóm tắt (Khuyên dùng)</label>
                                     <button
                                         onClick={() => setIsSummaryAssistantOpen(prev => !prev)}
                                         disabled={!idea.trim()}
@@ -1041,15 +1042,15 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                 <textarea
                                     id="summary_script"
                                     placeholder={`Dán kịch bản tóm tắt tại đây, hoặc dùng Trợ lý AI. Ví dụ:\nCảnh 1: Mèo điệp viên hạ cánh trên mái nhà.\nCảnh 2: Nó lẻn qua các ống thông gió.\nCảnh 3: Nó đối mặt với con chuột cyber.`}
-                                    className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-shadow duration-200 text-gray-100 placeholder-gray-400"
+                                    className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-shadow duration-200 text-lime-100 placeholder-lime-400"
                                     rows={5}
                                     value={summaryScript}
                                     onChange={(e) => setSummaryScript(e.target.value)}
                                 />
                                 {isSummaryAssistantOpen && (
-                                    <div className="w-full bg-blue-950/50 border border-blue-800 rounded-lg shadow-inner mt-4">
-                                        <div className="p-3 border-b border-blue-800 flex justify-between items-center">
-                                            <h3 className="text-md font-semibold text-gray-200 flex items-center">
+                                    <div className="w-full bg-lime-950/50 border border-lime-800 rounded-lg shadow-inner mt-4">
+                                        <div className="p-3 border-b border-lime-800 flex justify-between items-center">
+                                            <h3 className="text-md font-semibold text-lime-200 flex items-center">
                                                 <SparklesIcon className="w-5 h-5 mr-2 text-lime-400"/>
                                                 Trợ lý Kịch bản Tóm tắt
                                             </h3>
@@ -1065,7 +1066,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                            <SparklesIcon className="w-4 h-4 text-lime-200" />
                                                         </div>
                                                     )}
-                                                    <div className={`max-w-md p-3 rounded-lg ${msg.role === 'user' ? 'bg-lime-600 text-white' : 'bg-blue-800 text-gray-200'}`}>
+                                                    <div className={`max-w-md p-3 rounded-lg ${msg.role === 'user' ? 'bg-lime-600 text-white' : 'bg-lime-800 text-lime-200'}`}>
                                                         <p className="whitespace-pre-wrap">{msg.content}</p>
                                                     </div>
                                                 </div>
@@ -1075,7 +1076,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                     <div className="w-6 h-6 rounded-full bg-lime-500 flex-shrink-0 flex items-center justify-center">
                                                         <SparklesIcon className="w-4 h-4 text-lime-200" />
                                                     </div>
-                                                    <div className="max-w-md p-3 rounded-lg bg-blue-800 text-gray-200">
+                                                    <div className="max-w-md p-3 rounded-lg bg-lime-800 text-lime-200">
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2 h-2 bg-lime-300 rounded-full animate-pulse delay-75"></div>
                                                             <div className="w-2 h-2 bg-lime-300 rounded-full animate-pulse delay-150"></div>
@@ -1085,11 +1086,11 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="p-3 border-t border-blue-800 flex items-center gap-2">
+                                        <div className="p-3 border-t border-lime-800 flex items-center gap-2">
                                             <input
                                                 type="text"
                                                 placeholder="Nhập yêu cầu hoặc chỉnh sửa..."
-                                                className="flex-grow p-2 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 disabled:bg-blue-900"
+                                                className="flex-grow p-2 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 disabled:bg-lime-900 text-lime-100 placeholder-lime-500"
                                                 value={chatInput}
                                                 onChange={(e) => setChatInput(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleChatSend()}
@@ -1108,16 +1109,16 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                 )}
                             </div>
                             
-                           <div className="space-y-8 pt-6 border-t border-gray-700">
+                           <div className="space-y-8 pt-6 border-t border-lime-700">
                                 {/* Character Profiles */}
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-200 mb-4">Tham Chiếu Nhân Vật (Tùy chọn)</h3>
+                                    <h3 className="text-lg font-semibold text-lime-200 mb-4">Tham Chiếu Nhân Vật (Tùy chọn)</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                                         {characters.map((char, index) => (
-                                            <div key={char.id} className="p-4 bg-gray-900/50 rounded-lg border border-gray-700 flex flex-col gap-4">
+                                            <div key={char.id} className="p-4 bg-lime-950/50 rounded-lg border border-lime-700 flex flex-col gap-4">
                                                 <div className="flex justify-between items-center">
                                                     <input 
-                                                        className="bg-transparent text-gray-200 font-semibold text-lg border-none focus:ring-0 p-0 w-full" 
+                                                        className="bg-transparent text-lime-200 font-semibold text-lg border-none focus:ring-0 p-0 w-full" 
                                                         type="text" 
                                                         value={char.name}
                                                         onChange={(e) => setCharacters(p => p.map((c, i) => i === index ? { ...c, name: e.target.value } : c))}
@@ -1134,7 +1135,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                     <div className="grid grid-cols-2 gap-3">
                                                         {char.images.map((img, imgIndex) => (
                                                              <div key={imgIndex} className="relative group">
-                                                                <img alt={`Reference ${imgIndex + 1}`} className="w-full rounded-md object-cover border-2 border-gray-600 aspect-square" src={`data:${img.mimeType};base64,${img.base64}`} />
+                                                                <img alt={`Reference ${imgIndex + 1}`} className="w-full rounded-md object-cover border-2 border-lime-600 aspect-square" src={`data:${img.mimeType};base64,${img.base64}`} />
                                                                 <button 
                                                                     className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100" 
                                                                     aria-label={`Remove image ${imgIndex + 1}`}
@@ -1146,7 +1147,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                         ))}
                                                         <button
                                                             onClick={() => handleTriggerImageInput('character', index)}
-                                                            className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center w-full border border-dashed border-gray-600 aspect-square"
+                                                            className="cursor-pointer bg-lime-800 hover:bg-lime-700 text-lime-200 font-bold rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center w-full border border-dashed border-lime-600 aspect-square"
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                                                             <span className="text-xs mt-1">Thêm ảnh</span>
@@ -1163,14 +1164,14 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                 </button>
                                                 <textarea 
                                                     placeholder={`Mô tả chi tiết cho ${char.name}...`} 
-                                                    className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400" 
+                                                    className="w-full p-3 bg-lime-800 border border-lime-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-lime-400 text-lime-100" 
                                                     rows={3}
                                                     value={char.description}
                                                     onChange={(e) => setCharacters(p => p.map((c, i) => i === index ? { ...c, description: e.target.value } : c))}
                                                 ></textarea>
                                                 <textarea 
                                                     placeholder="Gợi ý Âm thanh Đặc trưng (Tùy chọn)..." 
-                                                    className="w-full mt-2 p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400" 
+                                                    className="w-full mt-2 p-3 bg-lime-800 border border-lime-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-lime-400 text-lime-100" 
                                                     rows={2}
                                                     value={char.soundCues}
                                                     onChange={(e) => setCharacters(p => p.map((c, i) => i === index ? { ...c, soundCues: e.target.value } : c))}
@@ -1179,7 +1180,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                         ))}
                                         <button 
                                             onClick={() => setCharacters(prev => [...prev, { id: Date.now().toString(), name: `Nhân vật ${prev.length + 1}`, description: '', soundCues: '', images: [] }])}
-                                            className="flex flex-col items-center justify-center p-4 aspect-square bg-gray-900/50 rounded-lg border-2 border-dashed border-gray-700 hover:bg-gray-800/70 hover:border-indigo-500 transition-colors duration-200 text-gray-400 hover:text-white" 
+                                            className="flex flex-col items-center justify-center p-4 aspect-square bg-lime-950/50 rounded-lg border-2 border-dashed border-lime-700 hover:bg-lime-800/70 hover:border-indigo-500 transition-colors duration-200 text-lime-400 hover:text-white" 
                                             aria-label="Thêm nhân vật mới"
                                         >
                                             <span className="text-5xl font-thin">+</span>
@@ -1190,19 +1191,19 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                 
                                 {/* Prop Profiles */}
                                  <div>
-                                    <h3 className="text-lg font-semibold text-gray-200 mb-4">Đạo cụ & Thực thể Quan trọng (Tùy chọn)</h3>
+                                    <h3 className="text-lg font-semibold text-lime-200 mb-4">Đạo cụ & Thực thể Quan trọng (Tùy chọn)</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                                         {props.map((prop, index) => (
-                                             <div key={prop.id} className="p-4 bg-gray-900/50 rounded-lg border border-gray-700 flex flex-col gap-4">
+                                             <div key={prop.id} className="p-4 bg-lime-950/50 rounded-lg border border-lime-700 flex flex-col gap-4">
                                                 <div className="flex justify-between items-center">
-                                                    <input className="bg-transparent text-gray-200 font-semibold text-lg border-none focus:ring-0 p-0 w-full" type="text" value={prop.name} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, name: e.target.value } : pr))} />
+                                                    <input className="bg-transparent text-lime-200 font-semibold text-lg border-none focus:ring-0 p-0 w-full" type="text" value={prop.name} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, name: e.target.value } : pr))} />
                                                     <button className="bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-500 transition-colors flex-shrink-0" aria-label={`Xóa ${prop.name}`} onClick={() => setProps(p => p.filter((_, i) => i !== index))}>✕</button>
                                                 </div>
-                                                <textarea placeholder={`Mô tả chi tiết cho ${prop.name}...`} className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400" rows={3} value={prop.description} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, description: e.target.value } : pr))}></textarea>
-                                                <textarea placeholder="Gợi ý Âm thanh Đặc trưng (Tùy chọn)..." className="w-full mt-2 p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400" rows={2} value={prop.soundCues} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, soundCues: e.target.value } : pr))}></textarea>
+                                                <textarea placeholder={`Mô tả chi tiết cho ${prop.name}...`} className="w-full p-3 bg-lime-800 border border-lime-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-lime-400 text-lime-100" rows={3} value={prop.description} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, description: e.target.value } : pr))}></textarea>
+                                                <textarea placeholder="Gợi ý Âm thanh Đặc trưng (Tùy chọn)..." className="w-full mt-2 p-3 bg-lime-800 border border-lime-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-lime-400 text-lime-100" rows={2} value={prop.soundCues} onChange={(e) => setProps(p => p.map((pr, i) => i === index ? { ...pr, soundCues: e.target.value } : pr))}></textarea>
                                             </div>
                                         ))}
-                                        <button onClick={() => setProps(prev => [...prev, { id: Date.now().toString(), name: `Đạo cụ ${prev.length + 1}`, description: '', soundCues: '' }])} className="flex flex-col items-center justify-center p-4 aspect-square bg-gray-900/50 rounded-lg border-2 border-dashed border-gray-700 hover:bg-gray-800/70 hover:border-indigo-500 transition-colors duration-200 text-gray-400 hover:text-white" aria-label="Thêm đạo cụ mới">
+                                        <button onClick={() => setProps(prev => [...prev, { id: Date.now().toString(), name: `Đạo cụ ${prev.length + 1}`, description: '', soundCues: '' }])} className="flex flex-col items-center justify-center p-4 aspect-square bg-lime-950/50 rounded-lg border-2 border-dashed border-lime-700 hover:bg-lime-800/70 hover:border-indigo-500 transition-colors duration-200 text-lime-400 hover:text-white" aria-label="Thêm đạo cụ mới">
                                             <span className="text-5xl font-thin">+</span>
                                             <span className="mt-2 font-semibold">Thêm Đạo cụ</span>
                                         </button>
@@ -1211,24 +1212,24 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
 
                                 {/* Setting Profiles */}
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-200 mb-4">Tham Chiếu Bối Cảnh (Tùy chọn)</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                                    <h3 className="text-lg font-semibold text-lime-200 mb-4">Tham Chiếu Bối Cảnh (Tùy chọn)</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-lime-950/50 rounded-lg border border-lime-700">
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-2 gap-3">
                                                  {settingImages.map((img, imgIndex) => (
                                                      <div key={imgIndex} className="relative group">
-                                                        <img alt={`Reference ${imgIndex + 1}`} className="w-full rounded-md object-cover border-2 border-gray-600 aspect-square" src={`data:${img.mimeType};base64,${img.base64}`} />
+                                                        <img alt={`Reference ${imgIndex + 1}`} className="w-full rounded-md object-cover border-2 border-lime-600 aspect-square" src={`data:${img.mimeType};base64,${img.base64}`} />
                                                         <button className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100" aria-label={`Remove image ${imgIndex + 1}`} onClick={() => setSettingImages(p => p.filter((_, i2) => i2 !== imgIndex))}>✕</button>
                                                     </div>
                                                 ))}
-                                                <button onClick={() => handleTriggerImageInput('setting')} className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center w-full border border-dashed border-gray-600 aspect-square">
+                                                <button onClick={() => handleTriggerImageInput('setting')} className="cursor-pointer bg-lime-800 hover:bg-lime-700 text-lime-200 font-bold rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center w-full border border-dashed border-lime-600 aspect-square">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                                                     <span className="text-xs mt-1">Thêm ảnh</span>
                                                 </button>
                                             </div>
                                             {/* Note: Analyze Setting button can be added here if needed */}
                                         </div>
-                                        <textarea placeholder="Mô tả chi tiết về bối cảnh tổng thể, không khí, thời gian trong ngày, v.v. để AI có thêm ngữ cảnh." className="w-full h-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400 min-h-[200px]" value={masterSettingDescription} onChange={(e) => setMasterSettingDescription(e.target.value)}></textarea>
+                                        <textarea placeholder="Mô tả chi tiết về bối cảnh tổng thể, không khí, thời gian trong ngày, v.v. để AI có thêm ngữ cảnh." className="w-full h-full p-3 bg-lime-800 border border-lime-600 rounded-md focus:ring-2 focus:ring-indigo-500 text-sm placeholder-lime-400 text-lime-100 min-h-[200px]" value={masterSettingDescription} onChange={(e) => setMasterSettingDescription(e.target.value)}></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1236,17 +1237,17 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
 
                             {/* Style Presets */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-200 mb-3">Phong Cách Video (Chọn một hoặc nhiều)</h3>
+                                <h3 className="text-lg font-semibold text-lime-200 mb-3">Phong Cách Video (Chọn một hoặc nhiều)</h3>
                                 <div className="flex flex-wrap gap-3">
                                     {styleOptions.map(style => (
                                         <button
                                             key={style.name}
                                             onClick={() => handleStyleClick(style.name)}
                                             title={style.description}
-                                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-900
+                                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-lime-900
                                                 ${selectedStyles.includes(style.name)
                                                     ? 'bg-lime-600 text-white focus:ring-lime-500'
-                                                    : 'bg-blue-800 text-gray-300 hover:bg-blue-700 focus:ring-gray-500'
+                                                    : 'bg-lime-800 text-lime-200 hover:bg-lime-700 focus:ring-gray-500'
                                                 }`}
                                         >
                                             {style.name}
@@ -1256,41 +1257,41 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                             </div>
                             
                             {/* Detailed Customization */}
-                             <div className="space-y-8 pt-6 border-t border-blue-800">
-                                <div className="bg-blue-800/50 p-4 rounded-lg border border-blue-700">
+                             <div className="space-y-8 pt-6 border-t border-lime-800">
+                                <div className="bg-lime-800/50 p-4 rounded-lg border border-lime-700">
                                     <label htmlFor="include-music-toggle" className="flex items-center cursor-pointer">
                                         <div className="relative">
                                             <input id="include-music-toggle" className="sr-only peer" type="checkbox" checked={includeMusic} onChange={() => setIncludeMusic(!includeMusic)} />
-                                            <div className="w-14 h-8 bg-blue-700 rounded-full peer-checked:bg-lime-600 transition-colors"></div>
+                                            <div className="w-14 h-8 bg-lime-700 rounded-full peer-checked:bg-green-600 transition-colors"></div>
                                             <div className="absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform peer-checked:translate-x-full"></div>
                                         </div>
                                         <div className="ml-4">
-                                            <span className="text-lg font-semibold text-gray-100">Bao gồm Âm nhạc</span>
-                                            <p className="text-sm text-gray-400">TẮT tùy chọn này nếu bạn muốn tự thêm nhạc nền sau.</p>
+                                            <span className="text-lg font-semibold text-lime-100">Bao gồm Âm nhạc</span>
+                                            <p className="text-sm text-lime-300/70">TẮT tùy chọn này nếu bạn muốn tự thêm nhạc nền sau.</p>
                                         </div>
                                     </label>
                                 </div>
                                 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                      <div>
-                                        <label htmlFor="scene-count" className="block text-sm font-semibold mb-2 text-gray-300">Số Lượng Cảnh</label>
+                                        <label htmlFor="scene-count" className="block text-sm font-semibold mb-2 text-lime-200">Số Lượng Cảnh</label>
                                         <input
                                             id="scene-count"
                                             type="number"
                                             value={sceneCount}
                                             onChange={(e) => setSceneCount(Math.max(1, parseInt(e.target.value, 10)))}
-                                            className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500"
+                                            className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-lime-100"
                                             min="1"
                                             max="15"
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="aspect-ratio" className="block text-sm font-semibold mb-2 text-gray-300">Tỷ lệ khung hình</label>
+                                        <label htmlFor="aspect-ratio" className="block text-sm font-semibold mb-2 text-lime-200">Tỷ lệ khung hình</label>
                                         <select
                                             id="aspect-ratio"
                                             value={aspectRatio}
                                             onChange={(e) => setAspectRatio(e.target.value)}
-                                            className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500"
+                                            className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-lime-100"
                                         >
                                             {DIRECTOR_ASPECT_RATIOS.map(ratio => (
                                                 <option key={ratio.name} value={ratio.name}>{ratio.label}</option>
@@ -1298,12 +1299,12 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label htmlFor="dialogue-language" className="block text-sm font-semibold mb-2 text-gray-300">Ngôn ngữ Thoại</label>
+                                        <label htmlFor="dialogue-language" className="block text-sm font-semibold mb-2 text-lime-200">Ngôn ngữ Thoại</label>
                                         <select
                                             id="dialogue-language"
                                             value={dialogueLanguage}
                                             onChange={(e) => setDialogueLanguage(e.target.value)}
-                                            className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500"
+                                            className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-lime-100"
                                         >
                                             {DIALOGUE_LANGUAGES.map(lang => (
                                                 <option key={lang.value} value={lang.value}>{lang.label}</option>
@@ -1311,7 +1312,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2 text-gray-300">Ngôn ngữ Prompt Video</label>
+                                        <label className="block text-sm font-semibold mb-2 text-lime-200">Ngôn ngữ Prompt Video</label>
                                         <div className="inline-flex rounded-lg shadow-sm w-full">
                                             <button
                                                 onClick={() => setOutputLanguage('english')}
@@ -1319,7 +1320,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                 className={`w-1/2 px-4 py-2.5 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-lime-500 rounded-l-lg ${
                                                     outputLanguage === 'english'
                                                         ? 'bg-lime-600 text-white'
-                                                        : 'bg-blue-800 text-gray-300 hover:bg-blue-700'
+                                                        : 'bg-lime-800 text-lime-300 hover:bg-lime-700'
                                                 }`}
                                             >
                                                 Tiếng Anh
@@ -1330,7 +1331,7 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                                                 className={`w-1/2 px-4 py-2.5 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-lime-500 rounded-r-lg ${
                                                     outputLanguage === 'vietnamese'
                                                         ? 'bg-lime-600 text-white'
-                                                        : 'bg-blue-800 text-gray-300 hover:bg-blue-700'
+                                                        : 'bg-lime-800 text-lime-300 hover:bg-lime-700'
                                                 }`}
                                             >
                                                 Tiếng Việt
@@ -1357,19 +1358,19 @@ const DirectorPage = ({ onBack }: { onBack: () => void }) => {
                     
                     {/* Results Section */}
                     {scriptData && (
-                        <div className="w-full max-w-7xl mx-auto mt-8 bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800 animate-fadeInUp">
+                        <div className="w-full max-w-7xl mx-auto mt-8 bg-lime-900/50 p-6 rounded-xl shadow-lg border border-lime-800 animate-fadeInUp">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-2xl font-bold text-gray-200">Kết quả</h2>
-                                <div className="flex items-center space-x-2 bg-blue-800 p-1 rounded-lg">
+                                <h2 className="text-2xl font-bold text-lime-200">Kết quả</h2>
+                                <div className="flex items-center space-x-2 bg-lime-800 p-1 rounded-lg">
                                     <button 
                                         onClick={() => setResultView('editor')}
-                                        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${resultView === 'editor' ? 'bg-lime-600 text-white' : 'text-gray-300 hover:bg-blue-700'}`}
+                                        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${resultView === 'editor' ? 'bg-lime-600 text-white' : 'text-lime-300 hover:bg-lime-700'}`}
                                     >
                                         Trình chỉnh sửa
                                     </button>
                                      <button 
                                         onClick={() => setResultView('json')}
-                                        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${resultView === 'json' ? 'bg-lime-600 text-white' : 'text-gray-300 hover:bg-blue-700'}`}
+                                        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${resultView === 'json' ? 'bg-lime-600 text-white' : 'text-lime-300 hover:bg-lime-700'}`}
                                     >
                                         Xem JSON
                                     </button>

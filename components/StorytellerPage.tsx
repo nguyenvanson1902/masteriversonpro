@@ -2,6 +2,8 @@
 
 
 
+
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { STORYTELLER_TOPICS, TTS_VOICES } from '../constants';
 import * as geminiService from '../services/geminiService';
@@ -37,7 +39,7 @@ const ApiKeyModal = ({
 
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800">
+            <div className="bg-lime-900 rounded-xl shadow-2xl w-full max-w-2xl border border-lime-800">
                 <div className="p-6">
                     <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
                     <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
@@ -46,10 +48,10 @@ const ApiKeyModal = ({
                         onChange={(e) => setKeysInput(e.target.value)}
                         placeholder="AIzaSy..."
                         rows={8}
-                        className="w-full p-3 bg-blue-950 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 text-gray-200 font-mono"
+                        className="w-full p-3 bg-lime-950 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-gray-200 font-mono"
                     />
                 </div>
-                <div className="bg-blue-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
+                <div className="bg-lime-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
                     <button onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white font-semibold rounded-lg">Hủy</button>
                     <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg">Lưu Keys</button>
                 </div>
@@ -338,18 +340,18 @@ const StorytellerPage = ({ onBack }) => {
     const selectedTopic = STORYTELLER_TOPICS.find(t => t.id === selectedTopicId);
     
     return (
-        <div className="min-h-screen bg-blue-950 text-gray-100 font-sans p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen bg-lime-950 text-lime-100 font-sans p-4 sm:p-6 lg:p-8">
             <ApiKeyModal isOpen={isApiKeyModalOpen} onClose={() => setIsApiKeyModalOpen(false)} onSave={handleSaveApiKeys} initialKeys={apiKeys} />
             <div className="container mx-auto">
                 <header className="text-center mb-10 relative">
-                     <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-blue-900 hover:bg-blue-800 rounded-full transition-colors" aria-label="Quay lại">
+                     <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-lime-900 hover:bg-lime-800 rounded-full transition-colors" aria-label="Quay lại">
                         <BackIcon className="w-6 h-6 text-gray-300" />
                     </button>
                     <h1 className="text-5xl mb-2 font-black text-gray-100">RIVER SƠN MASTER</h1>
                     <h1 className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-green-300 to-emerald-400 py-2">
                         STORYTELLING
                     </h1>
-                    <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
+                    <p className="mt-4 text-lg text-lime-200 max-w-3xl mx-auto">
                         Tạo kịch bản lồng tiếng chuyên nghiệp và chuyển đổi thành giọng nói AI chất lượng cao.
                     </p>
                      <div className="mt-4 flex justify-center">
@@ -362,18 +364,18 @@ const StorytellerPage = ({ onBack }) => {
 
                 <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                    {/* Left Column - Inputs */}
-                   <div className="bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800 space-y-6">
-                       <h2 className="text-2xl font-bold text-gray-200 border-b border-blue-800 pb-3">Bước 1: Tạo kịch bản</h2>
+                   <div className="bg-lime-900/50 p-6 rounded-xl shadow-lg border border-lime-800 space-y-6">
+                       <h2 className="text-2xl font-bold text-gray-200 border-b border-lime-800 pb-3">Bước 1: Tạo kịch bản</h2>
                        
                        {/* API Key */}
-                       <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-800">
+                       <div className="bg-lime-950/50 p-4 rounded-lg border border-lime-800">
                            <h3 className="text-lg font-semibold text-gray-200 mb-3 flex items-center"><KeyIcon className="w-5 h-5 mr-2 text-yellow-400" />Quản lý API Key</h3>
                             <div className="space-y-2 mb-3">
                                 {apiKeys.length > 0 ? apiKeys.slice(0, 3).map(key => {
                                     const status = apiKeyStatuses[key] || 'checking';
                                     const { text, color, icon } = statusMap[status];
                                     return (
-                                        <div key={key} className="flex items-center justify-between p-2 rounded-md bg-blue-900 text-sm">
+                                        <div key={key} className="flex items-center justify-between p-2 rounded-md bg-lime-900 text-sm">
                                             <div className="flex items-center space-x-2">
                                                 {icon}
                                                 <span className="text-gray-300 font-mono">{formatKeyForDisplay(key)}</span>
@@ -389,20 +391,20 @@ const StorytellerPage = ({ onBack }) => {
                        </div>
                        
                         <div>
-                            <label htmlFor="idea" className="block text-lg font-semibold mb-2 text-gray-200">Ý tưởng chính</label>
-                            <textarea id="idea" value={idea} onChange={e => setIdea(e.target.value)} placeholder="Ví dụ: Kể về một ngôi nhà ma ám trên ngọn đồi, nơi có những linh hồn không siêu thoát..." className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200" rows={3}></textarea>
+                            <label htmlFor="idea" className="block text-lg font-semibold mb-2 text-lime-200">Ý tưởng chính</label>
+                            <textarea id="idea" value={idea} onChange={e => setIdea(e.target.value)} placeholder="Ví dụ: Kể về một ngôi nhà ma ám trên ngọn đồi, nơi có những linh hồn không siêu thoát..." className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200 text-lime-100 placeholder-lime-400" rows={3}></textarea>
                         </div>
                         <div>
-                             <label htmlFor="topic" className="block text-lg font-semibold mb-2 text-gray-200">Chủ đề & Phong cách</label>
-                             <select id="topic" value={selectedTopicId} onChange={e => setSelectedTopicId(e.target.value)} className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200">
+                             <label htmlFor="topic" className="block text-lg font-semibold mb-2 text-lime-200">Chủ đề & Phong cách</label>
+                             <select id="topic" value={selectedTopicId} onChange={e => setSelectedTopicId(e.target.value)} className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200 text-lime-100">
                                  {STORYTELLER_TOPICS.map(topic => <option key={topic.id} value={topic.id}>{topic.name}</option>)}
                              </select>
-                              {selectedTopic && <p className="text-sm text-gray-400 mt-2">{selectedTopic.description}</p>}
+                              {selectedTopic && <p className="text-sm text-lime-300/70 mt-2">{selectedTopic.description}</p>}
                         </div>
                         <div>
-                             <label htmlFor="charCount" className="block text-lg font-semibold mb-2 text-gray-200">Độ dài Kịch bản (Ký tự)</label>
+                             <label htmlFor="charCount" className="block text-lg font-semibold mb-2 text-lime-200">Độ dài Kịch bản (Ký tự)</label>
                              <div className="flex items-center gap-4">
-                                <input id="charCount" type="range" min="500" max="50000" step="500" value={characterCount} onChange={e => setCharacterCount(Number(e.target.value))} className="w-full h-2 bg-blue-700 rounded-lg appearance-none cursor-pointer" />
+                                <input id="charCount" type="range" min="500" max="50000" step="500" value={characterCount} onChange={e => setCharacterCount(Number(e.target.value))} className="w-full h-2 bg-lime-700 rounded-lg appearance-none cursor-pointer" />
                                 <span className="font-mono text-lg text-lime-300 w-20 text-center">{characterCount}</span>
                              </div>
                         </div>
@@ -419,32 +421,32 @@ const StorytellerPage = ({ onBack }) => {
                    </div>
                    
                    {/* Right Column - Output & TTS */}
-                   <div className="bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800 space-y-6">
-                       <h2 className="text-2xl font-bold text-gray-200 border-b border-blue-800 pb-3">Bước 2: Chuyển thành giọng nói</h2>
+                   <div className="bg-lime-900/50 p-6 rounded-xl shadow-lg border border-lime-800 space-y-6">
+                       <h2 className="text-2xl font-bold text-gray-200 border-b border-lime-800 pb-3">Bước 2: Chuyển thành giọng nói</h2>
                        <div className="relative">
                             <PlayButton text={selectedText} onPlay={() => handleGenerateSpeech(true)} isLoading={isSamplePlaying} position={playButtonPosition} />
-                            <textarea ref={scriptTextAreaRef} onMouseUp={handleTextSelection} onBlur={() => { setTimeout(() => { setSelectedText(""); setPlayButtonPosition(null); }, 150) }} value={generatedScript} onChange={e => setGeneratedScript(e.target.value)} placeholder="Kịch bản do AI tạo sẽ xuất hiện ở đây..." className="w-full p-4 bg-blue-950/70 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200 h-64 resize-y"></textarea>
+                            <textarea ref={scriptTextAreaRef} onMouseUp={handleTextSelection} onBlur={() => { setTimeout(() => { setSelectedText(""); setPlayButtonPosition(null); }, 150) }} value={generatedScript} onChange={e => setGeneratedScript(e.target.value)} placeholder="Kịch bản do AI tạo sẽ xuất hiện ở đây..." className="w-full p-4 bg-lime-950/70 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 transition-shadow duration-200 h-64 resize-y text-lime-100 placeholder-lime-400"></textarea>
                        </div>
                        
                         {/* TTS Settings */}
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="voice" className="block text-lg font-semibold mb-2 text-gray-200">Giọng đọc</label>
-                                <select id="voice" value={selectedVoice.label} onChange={handleVoiceChange} className="w-full p-3 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500">
+                                <label htmlFor="voice" className="block text-lg font-semibold mb-2 text-lime-200">Giọng đọc</label>
+                                <select id="voice" value={selectedVoice.label} onChange={handleVoiceChange} className="w-full p-3 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-lime-100">
                                     {TTS_VOICES.map(v => <option key={v.label} value={v.label}>{v.label}</option>)}
                                 </select>
                                 {selectedVoice.style && (
-                                    <p className="text-sm text-gray-400 mt-2 p-3 bg-blue-950/50 rounded-lg border border-blue-800">{selectedVoice.style}</p>
+                                    <p className="text-sm text-lime-300/70 mt-2 p-3 bg-lime-950/50 rounded-lg border border-lime-800">{selectedVoice.style}</p>
                                 )}
-                                <div className="mt-3 p-3 bg-blue-950/50 rounded-lg border border-blue-800">
-                                    <label htmlFor="test-sentence" className="block text-sm font-semibold mb-2 text-gray-300">Nghe thử giọng nói đã chọn</label>
+                                <div className="mt-3 p-3 bg-lime-950/50 rounded-lg border border-lime-800">
+                                    <label htmlFor="test-sentence" className="block text-sm font-semibold mb-2 text-lime-300">Nghe thử giọng nói đã chọn</label>
                                     <div className="flex items-center gap-2">
                                         <input 
                                             id="test-sentence"
                                             type="text"
                                             value={testSentence}
                                             onChange={e => setTestSentence(e.target.value)}
-                                            className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md focus:ring-2 focus:ring-lime-500"
+                                            className="w-full p-2 bg-lime-800 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-lime-100"
                                         />
                                         <button 
                                             onClick={handleTestVoice}
@@ -479,8 +481,8 @@ const StorytellerPage = ({ onBack }) => {
                         </button>
                         
                         {fullAudioUrl && (
-                            <div className="mt-4 p-4 bg-blue-950/50 rounded-lg border border-blue-800 animate-fadeInUp">
-                                <h3 className="font-semibold mb-2 text-gray-200">Âm thanh đã tạo:</h3>
+                            <div className="mt-4 p-4 bg-lime-950/50 rounded-lg border border-lime-800 animate-fadeInUp">
+                                <h3 className="font-semibold mb-2 text-lime-200">Âm thanh đã tạo:</h3>
                                 <audio controls src={fullAudioUrl} className="w-full"></audio>
                                 <a href={fullAudioUrl} download="river_son_storyteller_audio.wav" className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
                                     <DownloadIcon className="w-5 h-5"/> Tải xuống file .WAV
@@ -499,13 +501,13 @@ const StorytellerPage = ({ onBack }) => {
                     </div>
                 )}
 
-                 <footer className="text-center mt-16 text-gray-500 text-sm flex flex-col items-center">
+                 <footer className="text-center mt-16 text-lime-500/70 text-sm flex flex-col items-center">
                     <p>PHÁT TRIỂN BỞI RIVER SƠN MASTER.</p>
                     <p>Donate để chúng tôi có động lực phát triển App đẳng cấp tối thượng hơn nữa, xin cảm ơn!</p>
                     <img 
                         src="https://img.vietqr.io/image/TCB-19037518595018-compact2.png?amount=100000&addInfo=TOOL%20AFFILIATE%20VINH%20VIEN&accountName=NGUYEN%20VAN%20SON" 
                         alt="QR Code for Bank Transfer" 
-                        className="w-64 h-64 rounded-lg shadow-lg border-2 border-slate-600 mt-4"
+                        className="w-64 h-64 rounded-lg shadow-lg border-2 border-lime-600 mt-4"
                     />
                 </footer>
             </div>

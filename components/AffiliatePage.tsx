@@ -1,10 +1,13 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as xlsx from 'xlsx';
-import { BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, ElaborateIcon, TranslateIcon, SaveIcon, DownloadIcon } from './Icons';
+import { 
+    BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, 
+    ElaborateIcon, TranslateIcon, DownloadIcon, ClipboardIcon
+} from './Icons';
 import * as geminiService from '../services/geminiService';
 import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError, API_LIMIT_ERROR_MESSAGE } from '../utils';
-import { Loader2, ClipboardIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { PACING_OPTIONS } from '../constants';
 
 const formatKeyForDisplay = (key: string) => `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
@@ -51,8 +54,8 @@ const ApiKeyModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800 animate-fadeInUp">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeInUp">
+            <div className="bg-lime-900 rounded-xl shadow-2xl w-full max-w-2xl border border-lime-800">
                 <div className="p-6">
                     <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
                     <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
@@ -61,12 +64,12 @@ const ApiKeyModal = ({
                         onChange={(e) => setKeysInput(e.target.value)}
                         placeholder="AIzaSy..."
                         rows={8}
-                        className="w-full p-3 bg-blue-950 border border-blue-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-200 font-mono"
+                        className="w-full p-3 bg-lime-950 border border-lime-700 rounded-md focus:ring-2 focus:ring-lime-500 text-gray-200 font-mono"
                     />
                 </div>
-                <div className="bg-blue-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
+                <div className="bg-lime-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
                     <button onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white font-semibold rounded-lg">Hủy</button>
-                    <button onClick={handleSave} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg">Lưu Keys</button>
+                    <button onClick={handleSave} className="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg">Lưu Keys</button>
                 </div>
             </div>
         </div>
@@ -100,8 +103,8 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
     };
 
     return (
-        <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-blue-500 hover:bg-blue-800">
-            <h3 className="text-lg font-semibold text-blue-200 mb-3">{title}</h3>
+        <div className="bg-lime-900/50 border border-lime-800 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-lime-500 hover:bg-lime-800">
+            <h3 className="text-lg font-semibold text-lime-200 mb-3">{title}</h3>
             <input
                 type="file"
                 ref={inputRef}
@@ -111,14 +114,14 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
             />
             <div
                 onClick={handleClick}
-                className="w-full aspect-square bg-blue-950/50 rounded-lg cursor-pointer flex items-center justify-center border-2 border-dashed border-blue-700 hover:border-blue-600 transition-colors relative"
+                className="w-full aspect-square bg-lime-950/50 rounded-lg cursor-pointer flex items-center justify-center border-2 border-dashed border-lime-700 hover:border-lime-600 transition-colors relative"
             >
                 {preview ? (
                     <img src={preview} alt="Uploaded preview" className="w-full h-full object-cover rounded-lg" />
                 ) : (
-                    <div className="flex flex-col items-center text-blue-300">
-                        <UploadIcon />
-                        <p className="mt-2 text-sm">Nhấp để tải lên</p>
+                    <div className="flex flex-col items-center text-lime-300">
+                        <UploadIcon className="w-8 h-8 mb-2" />
+                        <p className="text-sm">Nhấp để tải lên</p>
                     </div>
                 )}
             </div>
@@ -128,10 +131,10 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
 
 const SkeletonLoader = () => (
     <div className="w-full animate-pulse flex flex-col gap-4">
-        <div className="aspect-square bg-blue-800 rounded-lg"></div>
-        <div className="h-4 bg-blue-800 rounded w-3/4"></div>
-        <div className="h-4 bg-blue-800 rounded w-full"></div>
-        <div className="h-4 bg-blue-800 rounded w-1/2"></div>
+        <div className="aspect-square bg-lime-800 rounded-lg"></div>
+        <div className="h-4 bg-lime-800 rounded w-3/4"></div>
+        <div className="h-4 bg-lime-800 rounded w-full"></div>
+        <div className="h-4 bg-lime-800 rounded w-1/2"></div>
     </div>
 );
 
@@ -144,7 +147,7 @@ const AffiliateScriptDisplay = ({
     scriptData: any;
     setScriptData: (data: any) => void;
     withApiKeyRotation: (apiCall: (apiKey: string) => Promise<any>) => Promise<any>;
-    setError: (err: string) => void;
+    setError: (error: string | null) => void;
 }) => {
     const renumberScenes = (scenes: any[]) => scenes.map((scene, index) => ({ ...scene, scene_number: index + 1 }));
 
@@ -239,9 +242,9 @@ const AffiliateScriptDisplay = ({
     };
     
     return (
-        <div className="mt-12">
+        <div className="mt-12 animate-fadeInUp">
             <div className="text-center mb-4">
-                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400">
                     {scriptData.production_plan.title}
                 </h2>
                 <p className="italic text-gray-400 mt-1 max-w-3xl mx-auto">
@@ -251,10 +254,10 @@ const AffiliateScriptDisplay = ({
             <div className="flex flex-wrap justify-between items-center gap-4 mb-2">
                 <h3 className="text-2xl font-bold text-gray-200">Các Phân Cảnh</h3>
                 <div className="flex items-center flex-wrap gap-2">
-                    <button onClick={handleDownloadTxtScenesOnly} className="flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
+                    <button onClick={handleDownloadTxtScenesOnly} className="flex items-center px-3 py-1.5 bg-lime-600 hover:bg-lime-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
                         <DownloadIcon className="w-4 h-4 mr-2" /> Tải File TXT
                     </button>
-                    <button onClick={handleDownloadXlsx} className="flex items-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
+                    <button onClick={handleDownloadXlsx} className="flex items-center px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
                         <DownloadIcon className="w-4 h-4 mr-2" /> Tải File Excel
                     </button>
                     <button onClick={handleCopyJson} className="flex items-center px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-200 text-xs">
@@ -265,13 +268,13 @@ const AffiliateScriptDisplay = ({
 
             <div className="max-h-[75vh] overflow-y-auto space-y-4 pr-2">
                 {scriptData.scenes.map((scene: any, index: number) => (
-                    <div key={scene.scene_number} className="bg-blue-900 border border-blue-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/10">
+                    <div key={scene.scene_number} className="bg-lime-900 border border-lime-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-lime-500/10">
                         <div className="p-4 space-y-4 flex flex-col">
                            <div className="flex justify-between items-start">
-                                <h4 className="font-bold text-lg text-indigo-400">Cảnh {scene.scene_number}</h4>
+                                <h4 className="font-bold text-lg text-lime-400">Cảnh {scene.scene_number}</h4>
                                 <div className="text-right">
-                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
-                                    <span className="text-xs font-semibold bg-blue-800 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
+                                    <span className="text-xs font-semibold bg-lime-800 text-gray-300 px-2 py-1 rounded">{scene.duration_seconds} giây</span>
+                                    <span className="text-xs font-semibold bg-lime-800 text-gray-300 px-2 py-1 rounded ml-2">{scene.aspect_ratio}</span>
                                 </div>
                             </div>
                             <div className="flex-grow space-y-4 text-sm">
@@ -281,18 +284,18 @@ const AffiliateScriptDisplay = ({
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-grow">
                                                 <textarea
-                                                    className="w-full p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 transition resize-y min-h-[120px] whitespace-pre-wrap"
+                                                    className="w-full p-2 bg-lime-950/50 border border-lime-700 rounded-md text-sm placeholder-gray-400 focus:ring-2 focus:ring-lime-500 transition resize-y min-h-[120px] whitespace-pre-wrap"
                                                     value={scene.video_prompt}
                                                     onChange={(e) => handleUpdateScene(index, { video_prompt: e.target.value })}
                                                 />
                                                 {scene.translatedPrompt && (
-                                                    <div className="mt-2 p-2 bg-blue-950/50 border border-blue-700 rounded-md text-sm text-gray-300">
+                                                    <div className="mt-2 p-2 bg-lime-950/50 border border-lime-700 rounded-md text-sm text-gray-300">
                                                         <p className="whitespace-pre-wrap">{scene.translatedPrompt}</p>
                                                     </div>
                                                 )}
                                             </div>
                                             <div className="flex flex-col space-y-2 flex-shrink-0">
-                                                <button onClick={() => navigator.clipboard.writeText(scene.video_prompt)} className="flex items-center justify-center px-2 py-1 bg-blue-700 hover:bg-blue-600 text-white font-semibold rounded-md transition-colors duration-200 text-xs"><ClipboardIcon className="w-3 h-3 mr-1.5" /> Sao chép</button>
+                                                <button onClick={() => navigator.clipboard.writeText(scene.video_prompt)} className="flex items-center justify-center px-2 py-1 bg-lime-700 hover:bg-lime-600 text-white font-semibold rounded-md transition-colors duration-200 text-xs"><ClipboardIcon className="w-3 h-3 mr-1.5" /> Sao chép</button>
                                                 <button onClick={() => handleTranslate(index)} disabled={scene.isTranslating} className="flex items-center justify-center px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-md transition-colors duration-200 text-xs disabled:bg-sky-800 disabled:cursor-wait"><TranslateIcon className="w-3 h-3 mr-1.5" /> {scene.isTranslating ? '...' : (scene.translatedPrompt ? 'Ẩn' : 'Dịch')}</button>
                                                  <button onClick={() => handleElaborateScene(index)} disabled={scene.isElaborating} className="flex items-center justify-center px-2 py-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-md transition-colors duration-200 text-xs disabled:bg-amber-800 disabled:cursor-wait" title="Kéo dài phân cảnh này"><ElaborateIcon className="w-3 h-3 mr-1.5" /> {scene.isElaborating ? '...' : 'Chi tiết hóa'}</button>
                                             </div>
@@ -302,14 +305,14 @@ const AffiliateScriptDisplay = ({
                                         <strong className="font-semibold text-gray-400 block mb-1">Chỉ đạo Nhịp điệu</strong>
                                         <div className="flex items-center gap-2">
                                             <select
-                                                className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 transition disabled:opacity-50"
+                                                className="w-full p-2 bg-lime-800 border border-lime-700 rounded-md text-sm focus:ring-2 focus:ring-lime-500 transition disabled:opacity-50"
                                                 value={scene.emotional_pacing || 'default'}
                                                 onChange={(e) => handleUpdatePacing(index, e.target.value)}
                                                 disabled={scene.isUpdatingPacing}
                                             >
                                                 {PACING_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                             </select>
-                                            {scene.isUpdatingPacing && <Loader2 className="h-5 w-5 animate-spin text-indigo-400"/>}
+                                            {scene.isUpdatingPacing && <Loader2 className="h-5 w-5 animate-spin text-lime-400"/>}
                                         </div>
                                     </div>
                                 </div>
@@ -325,7 +328,7 @@ const AffiliateScriptDisplay = ({
 
 const OptionGroup = ({ label, children }: { label: string; children?: React.ReactNode }) => (
     <div className="flex flex-col items-center gap-2">
-        <label className="block text-sm font-medium text-slate-400">{label}</label>
+        <label className="block text-sm font-medium text-lime-200/70">{label}</label>
         <div className="flex items-center gap-3 flex-wrap justify-center">{children}</div>
     </div>
 );
@@ -333,9 +336,9 @@ const OptionGroup = ({ label, children }: { label: string; children?: React.Reac
 const OptionButton = ({ selected, onClick, children }: { selected: boolean; onClick: () => void; children?: React.ReactNode }) => (
     <button
         onClick={onClick}
-        className={`px-6 py-3 text-lg rounded-lg font-semibold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-950 focus:ring-blue-500 transform active:translate-y-0.5 ${selected
-            ? 'bg-blue-600 text-white border-b-4 border-blue-800 shadow-xl'
-            : 'bg-blue-800 text-blue-200 border-b-4 border-blue-900 hover:bg-blue-700 shadow-lg'
+        className={`px-6 py-3 text-lg rounded-lg font-semibold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-lime-950 focus:ring-lime-500 transform active:translate-y-0.5 ${selected
+            ? 'bg-lime-600 text-white border-b-4 border-lime-800 shadow-xl'
+            : 'bg-lime-800 text-lime-200 border-b-4 border-lime-900 hover:bg-lime-700 shadow-lg'
             }`}
     >
         {children}
@@ -352,6 +355,8 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
 
     const [modelImage, setModelImage] = useState<ImageData | null>(null);
     const [productImage, setProductImage] = useState<ImageData | null>(null);
+    // New State for Reference Image
+    const [referenceImage, setReferenceImage] = useState<ImageData | null>(null);
     
     const [generatedData, setGeneratedData] = useState<any[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -373,7 +378,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
         exhausted: { text: 'Hết hạn', color: 'bg-red-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-red-300" /> },
         invalid: { text: 'Không hợp lệ', color: 'bg-yellow-500/80 text-black', icon: <XCircleIcon className="w-4 h-4 text-yellow-800" /> },
         error: { text: 'Lỗi', color: 'bg-gray-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-gray-300" /> },
-        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> }
+        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <Loader2 className="animate-spin h-4 w-4 text-white" /> }
     };
 
     useEffect(() => {
@@ -384,7 +389,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
               setApiKeys(parsedKeys);
               setIsKeySet(true);
               const initialStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
-              parsedKeys.forEach((key) => { initialStatuses[key] = 'ready'; });
+              parsedKeys.forEach((key: string) => { initialStatuses[key] = 'ready'; });
               setApiKeyStatuses(initialStatuses);
             }
         }
@@ -409,14 +414,16 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     }, []);
     
     const withApiKeyRotation = useCallback(async (apiCall: (apiKey: string) => Promise<any>) => {
-        if (apiKeys.length === 0) {
-            const err = "Vui lòng thiết lập API Key trước khi tạo nội dung.";
-            setError(err);
-            throw new Error(err);
+        if (!apiKeys || apiKeys.length === 0) {
+            const msg = "Vui lòng thiết lập API Key trước khi sử dụng.";
+            setError(msg);
+            setIsApiKeyModalOpen(true);
+            throw new Error("API Key not set.");
         }
         
         const initialIndex = apiKeyIndex.current;
         let attempts = 0;
+        let lastError: any = null;
 
         while (attempts < apiKeys.length) {
             const currentIndex = (initialIndex + attempts) % apiKeys.length;
@@ -424,7 +431,13 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
             apiKeyIndex.current = currentIndex;
             
             const status = apiKeyStatuses[currentApiKey];
-            if (status === 'exhausted' || status === 'invalid' || status === 'error') {
+            // Skip if known bad, but allow retrying 'error' status (could be transient)
+            if (status === 'exhausted' || status === 'invalid') {
+                attempts++;
+                continue;
+            }
+            
+            if (!currentApiKey || currentApiKey.trim() === "") {
                 attempts++;
                 continue;
             }
@@ -432,23 +445,36 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
             try {
                 const result = await apiCall(currentApiKey);
                 setError(null);
+                if (apiKeyStatuses[currentApiKey] !== 'ready') {
+                     setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'ready' }));
+                }
                 return result;
             } catch (err) {
+                lastError = err;
                 if (isRateLimitError(err)) {
-                    console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is exhausted or rate-limited.`);
                     setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'exhausted' }));
                     attempts++;
                 } else if (isInvalidApiKeyError(err)) {
-                     console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is invalid.`);
                      setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'invalid' }));
                      attempts++;
                 } else {
-                    throw err;
+                    // For generic errors (500, safety, etc), try next key but keep track of error
+                    // Don't mark key as permanently bad in UI immediately unless it's a clear auth/quota issue
+                    console.warn(`Error with key ${formatKeyForDisplay(currentApiKey)}:`, err);
+                    attempts++;
                 }
             }
         }
         
-        throw new Error(API_LIMIT_ERROR_MESSAGE);
+        if (lastError) {
+             const msg = getApiErrorMessage(lastError);
+             setError(`Lỗi API: ${msg}`);
+             throw lastError;
+        }
+        
+        const limitMsg = API_LIMIT_ERROR_MESSAGE;
+        setError(limitMsg);
+        throw new Error("All available API keys failed or are exhausted.");
     }, [apiKeys, apiKeyStatuses]);
 
     const setScriptDataForIndex = (index: number, data: any) => {
@@ -461,6 +487,12 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     };
 
     const handleGenerateContent = useCallback(async () => {
+        if (!isKeySet || apiKeys.length === 0) {
+            setError("Chưa có API Key. Vui lòng nhập API Key để tiếp tục.");
+            setIsApiKeyModalOpen(true);
+            return;
+        }
+
         if (!modelImage || !productImage) {
             setError('Vui lòng tải lên cả ảnh người mẫu và ảnh sản phẩm.');
             return;
@@ -476,6 +508,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     geminiService.generateFullAffiliateScript(apiKey, {
                         modelImageBase64: modelImage.base64,
                         productImageBase64: productImage.base64,
+                        referenceImageBase64: referenceImage ? referenceImage.base64 : null, // Pass the reference image
                         aspectRatio, voice, region, generationMode,
                         outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform
                     })
@@ -491,29 +524,24 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
 
         } catch (err) {
             console.error(err);
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("Đã xảy ra lỗi không xác định.");
-            }
         } finally {
             setIsLoading(false);
         }
-    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation]);
+    }, [modelImage, productImage, referenceImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation, isKeySet, apiKeys.length]);
 
     return (
-        <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
+        <div className="min-h-screen bg-lime-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
             <ApiKeyModal isOpen={isApiKeyModalOpen} onClose={() => setIsApiKeyModalOpen(false)} onSave={handleSaveApiKeys} initialKeys={apiKeys} />
             <div className="w-full max-w-7xl mx-auto flex flex-col gap-8">
                 <header className="text-center relative">
-                    <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center bg-blue-900/50 backdrop-blur-sm border border-cyan-500 text-cyan-300 font-semibold px-4 py-2 rounded-lg shadow-lg shadow-cyan-500/10 hover:bg-cyan-500/20 hover:text-cyan-200 hover:shadow-cyan-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center bg-lime-900/50 backdrop-blur-sm border border-lime-500 text-lime-300 font-semibold px-4 py-2 rounded-lg shadow-lg shadow-lime-500/10 hover:bg-lime-500/20 hover:text-lime-200 hover:shadow-lime-500/30 transition-all duration-300 transform hover:-translate-y-1">
                         <BackIcon className="w-5 h-5 mr-2" />
                         <span>Quay Lại</span>
                     </button>
                     <h1 className="text-4xl lg:text-5xl font-bold">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">MASTER RIVER SƠN AFFILIATE</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500">MASTER RIVER SƠN AFFILIATE</span>
                     </h1>
-                    <p className="text-blue-200 mt-2">
+                    <p className="text-lime-200 mt-2">
                         Ứng dụng tạo ảnh sản phẩm và kịch bản quảng cáo chi tiết cho Tiktok và Facebook.
                     </p>
                 </header>
@@ -521,9 +549,9 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 <main className="flex flex-col gap-8 w-full">
                     { !generatedData && (
                         <>
-                            <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-6 flex flex-col gap-6">
+                            <div className="bg-lime-900/50 border border-lime-800 rounded-xl p-6 flex flex-col gap-6">
                                 {/* API Key Section */}
-                                <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-800 max-w-2xl mx-auto w-full">
+                                <div className="bg-lime-950/50 p-4 rounded-lg border border-lime-800 max-w-2xl mx-auto w-full">
                                     <h3 className="text-lg font-semibold text-gray-200 mb-3 flex items-center">
                                         <KeyIcon className="w-5 h-5 mr-2 text-yellow-400" />Quản lý API Key
                                     </h3>
@@ -532,7 +560,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             const status = apiKeyStatuses[key] || 'checking';
                                             const { text, color, icon } = statusMap[status];
                                             return (
-                                                <div key={key} className="flex items-center justify-between p-2 rounded-md bg-blue-900 text-sm">
+                                                <div key={key} className="flex items-center justify-between p-2 rounded-md bg-lime-900 text-sm">
                                                     <div className="flex items-center space-x-2">
                                                         {icon}
                                                         <span className="text-gray-300 font-mono">{formatKeyForDisplay(key)}</span>
@@ -542,12 +570,12 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             );
                                         }) : <p className="text-sm text-gray-400 text-center py-1">Chưa có API Key nào. Vui lòng nhập key để sử dụng.</p>}
                                     </div>
-                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-2 px-3 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center justify-center shadow-md transform active:scale-95">
+                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-2 px-3 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center justify-center">
                                         {isKeySet ? `Quản lý ${apiKeys.length} Keys` : 'Nhập API Keys (Bắt buộc)'}
                                     </button>
                                 </div>
 
-                                <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 pt-4 border-t border-blue-800">
+                                <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 pt-4 border-t border-lime-800">
                                     <OptionGroup label="Nền tảng">
                                         <OptionButton selected={platform === 'tiktok'} onClick={() => setPlatform('tiktok')}>TikTok</OptionButton>
                                         <OptionButton selected={platform === 'facebook'} onClick={() => setPlatform('facebook')}>Facebook</OptionButton>
@@ -564,7 +592,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                         <select
                                             value={numberOfResults}
                                             onChange={(e) => setNumberOfResults(Number(e.target.value))}
-                                            className="bg-blue-800 text-blue-200 border-b-4 border-blue-900 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="bg-lime-800 text-lime-200 border-b-4 border-lime-900 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-lime-500"
                                         >
                                             {[...Array(5)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
                                         </select>
@@ -575,7 +603,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="flex flex-col">
-                                        <label htmlFor="outfit-suggestion" className="block text-sm font-medium text-slate-400 mb-2">Gợi ý trang phục (không bắt buộc)</label>
+                                        <label htmlFor="outfit-suggestion" className="block text-sm font-medium text-lime-200/70 mb-2">Gợi ý trang phục (không bắt buộc)</label>
                                         <input
                                             type="text"
                                             id="outfit-suggestion"
@@ -583,58 +611,58 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             onChange={(e) => setOutfitSuggestion(e.target.value)}
                                             disabled={generationMode === 'fashion'}
                                             placeholder={generationMode === 'fashion' ? 'AI sẽ tự động phối đồ' : 'VD: váy maxi đi biển...'}
-                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+                                            className="w-full bg-lime-800 border border-lime-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-lime-500 disabled:opacity-60"
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label htmlFor="background-suggestion" className="block text-sm font-medium text-slate-400 mb-2">Gợi ý bối cảnh (không bắt buộc)</label>
+                                        <label htmlFor="background-suggestion" className="block text-sm font-medium text-lime-200/70 mb-2">Gợi ý bối cảnh (không bắt buộc)</label>
                                         <input
                                             type="text"
                                             id="background-suggestion"
                                             value={backgroundSuggestion}
                                             onChange={(e) => setBackgroundSuggestion(e.target.value)}
                                             placeholder="VD: quán cafe sân vườn, bãi biển hoàng hôn..."
-                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-lime-800 border border-lime-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-lime-500"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="flex flex-col">
-                                        <label htmlFor="product-info" className="block text-sm font-medium text-slate-400 mb-2">Thông tin sản phẩm (để tạo lời thoại)</label>
+                                        <label htmlFor="product-info" className="block text-sm font-medium text-lime-200/70 mb-2">Thông tin sản phẩm (để tạo lời thoại)</label>
                                         <textarea
                                             id="product-info"
                                             value={productInfo}
                                             onChange={(e) => setProductInfo(e.target.value)}
                                             placeholder={generationMode === 'fashion' ? 'Ví dụ: Áo sơ mi lụa, chống nhăn...' : 'Ví dụ: Son môi siêu lì, giữ màu 8 tiếng...'}
                                             rows={4}
-                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-lime-800 border border-lime-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-lime-500"
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label htmlFor="product-suggestion" className="block text-sm font-medium text-slate-400 mb-2">Gợi ý về video (không bắt buộc)</label>
+                                        <label htmlFor="product-suggestion" className="block text-sm font-medium text-lime-200/70 mb-2">Gợi ý về video (không bắt buộc)</label>
                                         <textarea
                                             id="product-suggestion"
                                             value={productSuggestion}
                                             onChange={(e) => setProductSuggestion(e.target.value)}
                                             placeholder="Ví dụ: hợp với giới trẻ, nhấn mạnh chống nước..."
                                             rows={4}
-                                            className="w-full bg-blue-800 border border-blue-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full bg-lime-800 border border-lime-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-lime-500"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
                                 <ImageUploader title="1. Tải ảnh khuôn mặt" onImageUpload={setModelImage} />
                                 <ImageUploader title={generationMode === 'product' ? "2. Tải ảnh sản phẩm" : "2. Tải ảnh trang phục"} onImageUpload={setProductImage} />
+                                <ImageUploader title="3. Tải ảnh mẫu quảng cáo/bối cảnh (Tùy chọn)" onImageUpload={setReferenceImage} />
                             </div>
 
                             <div className="flex justify-center">
                                 <button
                                     onClick={handleGenerateContent}
-                                    disabled={isLoading}
-                                    className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg border-b-4 border-blue-800 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transform active:translate-y-1"
+                                    className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3 bg-lime-600 text-white font-bold rounded-lg shadow-lg border-b-4 border-lime-800 hover:bg-lime-700 disabled:bg-slate-600 disabled:cursor-not-allowed transform active:translate-y-1"
                                 >
                                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin"/> : <WandIcon />}
                                     <span className="text-lg">{isLoading ? `Đang tạo ${numberOfResults} kết quả...` : 'Tạo Nội dung'}</span>
@@ -646,7 +674,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     {isLoading && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {Array.from({ length: numberOfResults }).map((_, index) => (
-                                <div key={index} className="bg-blue-900/50 border border-blue-800 rounded-xl p-4"><SkeletonLoader /></div>
+                                <div key={index} className="bg-lime-900/50 border border-lime-800 rounded-xl p-4"><SkeletonLoader /></div>
                             ))}
                         </div>
                     )}
@@ -654,12 +682,20 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     {!isLoading && generatedData && generatedData.length > 0 && (
                         <div className="w-full max-w-7xl mx-auto mt-12 space-y-8">
                              {generatedData.map((data, index) => (
-                                <div key={data.id} className="bg-blue-900/50 p-6 rounded-xl shadow-lg border border-blue-800">
-                                    <h2 className="text-2xl font-bold text-gray-200 mb-4 pb-2 border-b border-blue-700">Kết quả {index + 1}</h2>
+                                <div key={data.id} className="bg-lime-900/50 p-6 rounded-xl shadow-lg border border-lime-800">
+                                    <h2 className="text-2xl font-bold text-gray-200 mb-4 pb-2 border-b border-lime-700">Kết quả {index + 1}</h2>
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                        <div className="lg:col-span-1">
+                                        <div className="lg:col-span-1 relative group">
                                             <h3 className="text-xl font-semibold text-gray-300 mb-3">Ảnh quảng cáo</h3>
                                             <img src={data.imageUrl} alt={`Generated content ${index + 1}`} className="w-full object-contain rounded-lg shadow-lg"/>
+                                            <a 
+                                                href={data.imageUrl} 
+                                                download={`affiliate_image_${index + 1}.jpg`}
+                                                className="absolute bottom-2 right-2 p-2 bg-lime-700/80 hover:bg-lime-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                title="Tải xuống"
+                                            >
+                                                <DownloadIcon className="w-6 h-6" />
+                                            </a>
                                         </div>
                                         <div className="lg:col-span-2">
                                             <AffiliateScriptDisplay
@@ -672,22 +708,14 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                     </div>
                                 </div>
                             ))}
-                            <div className="flex justify-center">
-                                <button 
-                                    onClick={() => setGeneratedData(null)} 
-                                    className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold transition-colors"
-                                >
-                                    Tạo mới
-                                </button>
-                            </div>
                         </div>
                     )}
                     
                     {error && (
                         <div className="fixed bottom-4 right-4 w-full max-w-md bg-red-800/90 text-white p-4 rounded-lg shadow-lg border border-red-600 backdrop-blur-sm animate-fadeInUp z-50">
                             <div className="flex justify-between items-start">
-                                 <div className="whitespace-pre-wrap"><strong className="font-bold">Đã xảy ra lỗi:</strong><br/>{error}</div>
-                                 <button onClick={() => setError(null)} className="p-1 -mt-1 -mr-1"><XCircleIcon className="w-6 h-6"/></button>
+                                <p><strong className="font-semibold">Lỗi:</strong> {error}</p>
+                                <button onClick={() => setError(null)} className="p-1"><XCircleIcon className="w-5 h-5 text-white"/></button>
                             </div>
                         </div>
                     )}

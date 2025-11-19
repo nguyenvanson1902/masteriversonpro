@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { NEGATIVE_PROMPT, PACING_OPTIONS } from '../constants';
 import { isInvalidApiKeyError, isRateLimitError } from '../utils';
@@ -423,7 +424,7 @@ export async function generateFullAffiliateScript(apiKey: string, options: any):
     const scriptGenModel = 'gemini-2.5-pro';
 
     // Step 1: Generate the image
-    const imageGenPrompt = `Create a realistic image for a ${options.platform} video.
+    let imageGenPrompt = `Create a realistic image for a ${options.platform} video.
     - Aspect Ratio: ${options.aspectRatio}.
     - The scene should feature a person consistent with the reference face image provided.
     - If this is for a fashion post (${options.generationMode === 'fashion'}), the person should be wearing the outfit from the reference clothing image. The final image should be a full-body or half-body shot.
@@ -432,6 +433,11 @@ export async function generateFullAffiliateScript(apiKey: string, options: any):
     - Product context: ${options.productInfo}.
     - Video suggestions: ${options.productSuggestion}.
     - The image should look like a high-quality, authentic social media post.`;
+    
+    // If a reference/background image is provided, add instructions for it
+    if (options.referenceImageBase64) {
+        imageGenPrompt += `\n- IMPORTANT: Use the third provided image (Reference/Background) as the main stylistic or environmental reference for the background and lighting.`;
+    }
 
     // FIX: Explicitly type imageGenParts as any[] to allow for mixed content types (text and inlineData).
     const imageGenParts: any[] = [
@@ -439,6 +445,10 @@ export async function generateFullAffiliateScript(apiKey: string, options: any):
         { inlineData: { mimeType: 'image/jpeg', data: options.modelImageBase64 } },
         { inlineData: { mimeType: 'image/jpeg', data: options.productImageBase64 } }
     ];
+    
+    if (options.referenceImageBase64) {
+        imageGenParts.push({ inlineData: { mimeType: 'image/jpeg', data: options.referenceImageBase64 } });
+    }
 
     const imageResponse = await ai.models.generateContent({
         model: imageGenModel,
