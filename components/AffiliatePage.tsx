@@ -431,6 +431,12 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 attempts++;
                 continue;
             }
+            
+            // Ensure the key is not just an empty string
+            if (!currentApiKey || currentApiKey.trim() === "") {
+                attempts++;
+                continue;
+            }
 
             try {
                 const result = await apiCall(currentApiKey);
