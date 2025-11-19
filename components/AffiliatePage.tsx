@@ -4,10 +4,11 @@ import { GoogleGenAI, Modality, Type } from "@google/genai";
 import * as xlsx from 'xlsx';
 import { BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, ElaborateIcon, TranslateIcon, SaveIcon, DownloadIcon } from './Icons';
 import * as geminiService from '../services/geminiService';
-import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError } from '../utils';
+import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError, API_LIMIT_ERROR_MESSAGE } from '../utils';
 import { Loader2, ClipboardIcon } from 'lucide-react';
 import { PACING_OPTIONS } from '../constants';
 
+const formatKeyForDisplay = (key: string) => `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
 
 interface ImageData {
     file: File;
@@ -44,6 +45,52 @@ const fileToBase64 = (file: File): Promise<string> => {
         };
         reader.onerror = error => reject(error);
     });
+};
+
+const ApiKeyModal = ({
+    isOpen,
+    onClose,
+    onSave,
+    initialKeys
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (keys: string[]) => void;
+    initialKeys: string[];
+}) => {
+    const [keysInput, setKeysInput] = useState(initialKeys.join('\n'));
+    useEffect(() => {
+        setKeysInput(initialKeys.join('\n'));
+    }, [initialKeys, isOpen]);
+
+    const handleSave = () => {
+        const keys = keysInput.split(/[\n,]+/).map(k => k.trim()).filter(Boolean);
+        onSave(keys);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeInUp">
+            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800">
+                <div className="p-6">
+                    <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
+                    <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
+                    <textarea
+                        value={keysInput}
+                        onChange={(e) => setKeysInput(e.target.value)}
+                        placeholder="AIzaSy..."
+                        rows={8}
+                        className="w-full p-3 bg-blue-950 border border-blue-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-200 font-mono"
+                    />
+                </div>
+                <div className="bg-blue-950/50 px-6 py-4 rounded-b-xl flex justify-end gap-4">
+                    <button onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white font-semibold rounded-lg">Hủy</button>
+                    <button onClick={handleSave} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg">Lưu Keys</button>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload: (imageData: ImageData) => void; }) => {
@@ -311,6 +358,13 @@ const OptionButton = ({ selected, onClick, children }: { selected: boolean; onCl
 );
 
 const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
+    // API Key Management State
+    const [apiKeys, setApiKeys] = useState<string[]>([]);
+    const [isKeySet, setIsKeySet] = useState(false);
+    const [apiKeyStatuses, setApiKeyStatuses] = useState<{ [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' }>({});
+    const apiKeyIndex = useRef(0);
+    const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+
     const [modelImage, setModelImage] = useState<ImageData | null>(null);
     const [productImage, setProductImage] = useState<ImageData | null>(null);
     
@@ -328,19 +382,91 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     const [backgroundSuggestion, setBackgroundSuggestion] = useState('');
     const [productInfo, setProductInfo] = useState('');
     const [productSuggestion, setProductSuggestion] = useState('');
-    
-    const withApiKeyRotation = useCallback(async (apiCall: (apiKey: string) => Promise<any>) => {
-        // A placeholder for the API key rotation logic, assuming a single key from env for simplicity now
-        try {
-             if (!process.env.API_KEY) {
-                throw new Error("API key is not configured.");
+
+    const statusMap = {
+        ready: { text: 'Sẵn sàng', color: 'bg-green-500/80 text-white', icon: <CheckCircleIcon className="w-4 h-4 text-green-400" /> },
+        exhausted: { text: 'Hết hạn', color: 'bg-red-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-red-300" /> },
+        invalid: { text: 'Không hợp lệ', color: 'bg-yellow-500/80 text-black', icon: <XCircleIcon className="w-4 h-4 text-yellow-800" /> },
+        error: { text: 'Lỗi', color: 'bg-gray-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-gray-300" /> },
+        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> }
+    };
+
+    useEffect(() => {
+        const storedKeys = localStorage.getItem("gemini-api-keys");
+        if (storedKeys) {
+            const parsedKeys = JSON.parse(storedKeys);
+            if (Array.isArray(parsedKeys) && parsedKeys.length > 0) {
+              setApiKeys(parsedKeys);
+              setIsKeySet(true);
+              const initialStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
+              parsedKeys.forEach((key) => { initialStatuses[key] = 'ready'; });
+              setApiKeyStatuses(initialStatuses);
             }
-            return await apiCall(process.env.API_KEY);
-        } catch (err) {
-            setError(getApiErrorMessage(err));
-            throw err;
         }
     }, []);
+
+    const handleSaveApiKeys = useCallback(async (keys: string[]) => {
+        localStorage.setItem("gemini-api-keys", JSON.stringify(keys));
+        setApiKeys(keys);
+        setIsKeySet(keys.length > 0);
+        setIsApiKeyModalOpen(false);
+        apiKeyIndex.current = 0;
+        
+        const checkingStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
+        keys.forEach(key => { checkingStatuses[key] = 'checking'; });
+        setApiKeyStatuses(checkingStatuses);
+
+        const newStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
+        for (const key of keys) {
+            newStatuses[key] = await geminiService.validateApiKey(key);
+        }
+        setApiKeyStatuses(newStatuses);
+    }, []);
+    
+    const withApiKeyRotation = useCallback(async (apiCall: (apiKey: string) => Promise<any>) => {
+        if (apiKeys.length === 0) {
+            setError("Vui lòng thiết lập API Key trước.");
+            throw new Error("API Key not set.");
+        }
+        
+        const initialIndex = apiKeyIndex.current;
+        let attempts = 0;
+
+        while (attempts < apiKeys.length) {
+            const currentIndex = (initialIndex + attempts) % apiKeys.length;
+            const currentApiKey = apiKeys[currentIndex];
+            apiKeyIndex.current = currentIndex;
+            
+            const status = apiKeyStatuses[currentApiKey];
+            if (status === 'exhausted' || status === 'invalid' || status === 'error') {
+                attempts++;
+                continue;
+            }
+
+            try {
+                const result = await apiCall(currentApiKey);
+                setError(null);
+                return result;
+            } catch (err) {
+                if (isRateLimitError(err)) {
+                    console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is exhausted or rate-limited.`);
+                    setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'exhausted' }));
+                    attempts++;
+                } else if (isInvalidApiKeyError(err)) {
+                     console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is invalid.`);
+                     setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'invalid' }));
+                     attempts++;
+                } else {
+                    const errorMessage = getApiErrorMessage(err);
+                    setError(errorMessage);
+                    throw err;
+                }
+            }
+        }
+        
+        setError(API_LIMIT_ERROR_MESSAGE);
+        throw new Error("All available API keys failed or are exhausted.");
+    }, [apiKeys, apiKeyStatuses]);
 
     const setScriptDataForIndex = (index: number, data: any) => {
         setGeneratedData(prev => {
@@ -385,10 +511,11 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform]);
+    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation]);
 
     return (
         <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
+            <ApiKeyModal isOpen={isApiKeyModalOpen} onClose={() => setIsApiKeyModalOpen(false)} onSave={handleSaveApiKeys} initialKeys={apiKeys} />
             <div className="w-full max-w-7xl mx-auto flex flex-col gap-8">
                 <header className="text-center relative">
                     <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center bg-blue-900/50 backdrop-blur-sm border border-cyan-500 text-cyan-300 font-semibold px-4 py-2 rounded-lg shadow-lg shadow-cyan-500/10 hover:bg-cyan-500/20 hover:text-cyan-200 hover:shadow-cyan-500/30 transition-all duration-300 transform hover:-translate-y-1">
@@ -406,28 +533,55 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 <main className="flex flex-col gap-8 w-full">
                     { !generatedData && (
                         <>
-                            <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
-                                <OptionGroup label="Nền tảng">
-                                    <OptionButton selected={platform === 'tiktok'} onClick={() => setPlatform('tiktok')}>TikTok</OptionButton>
-                                    <OptionButton selected={platform === 'facebook'} onClick={() => setPlatform('facebook')}>Facebook</OptionButton>
-                                </OptionGroup>
-                                <OptionGroup label="Loại Nội dung">
-                                    <OptionButton selected={generationMode === 'product'} onClick={() => setGenerationMode('product')}>Sản phẩm cầm tay</OptionButton>
-                                    <OptionButton selected={generationMode === 'fashion'} onClick={() => setGenerationMode('fashion')}>Trang phục</OptionButton>
-                                </OptionGroup>
-                                <OptionGroup label="Tỷ lệ ảnh">
-                                    <OptionButton selected={aspectRatio === '9:16'} onClick={() => setAspectRatio('9:16')}>9:16</OptionButton>
-                                    <OptionButton selected={aspectRatio === '16:9'} onClick={() => setAspectRatio('16:9')}>16:9</OptionButton>
-                                </OptionGroup>
-                                <OptionGroup label="Số lượng kết quả">
-                                    <select
-                                        value={numberOfResults}
-                                        onChange={(e) => setNumberOfResults(Number(e.target.value))}
-                                        className="bg-blue-800 text-blue-200 border-b-4 border-blue-900 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        {[...Array(5)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
-                                    </select>
-                                </OptionGroup>
+                            <div className="bg-blue-900/50 border border-blue-800 rounded-xl p-6 flex flex-col gap-6">
+                                {/* API Key Section */}
+                                <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-800 max-w-2xl mx-auto w-full">
+                                    <h3 className="text-lg font-semibold text-gray-200 mb-3 flex items-center">
+                                        <KeyIcon className="w-5 h-5 mr-2 text-yellow-400" />Quản lý API Key
+                                    </h3>
+                                    <div className="space-y-2 mb-3">
+                                        {apiKeys.length > 0 ? apiKeys.slice(0, 3).map(key => {
+                                            const status = apiKeyStatuses[key] || 'checking';
+                                            const { text, color, icon } = statusMap[status];
+                                            return (
+                                                <div key={key} className="flex items-center justify-between p-2 rounded-md bg-blue-900 text-sm">
+                                                    <div className="flex items-center space-x-2">
+                                                        {icon}
+                                                        <span className="text-gray-300 font-mono">{formatKeyForDisplay(key)}</span>
+                                                    </div>
+                                                    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${color}`}>{text}</span>
+                                                </div>
+                                            );
+                                        }) : <p className="text-sm text-gray-400 text-center py-1">Chưa có API Key nào. Vui lòng nhập key để sử dụng.</p>}
+                                    </div>
+                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-2 px-3 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center justify-center">
+                                        {isKeySet ? `Quản lý ${apiKeys.length} Keys` : 'Nhập API Keys (Bắt buộc)'}
+                                    </button>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 pt-4 border-t border-blue-800">
+                                    <OptionGroup label="Nền tảng">
+                                        <OptionButton selected={platform === 'tiktok'} onClick={() => setPlatform('tiktok')}>TikTok</OptionButton>
+                                        <OptionButton selected={platform === 'facebook'} onClick={() => setPlatform('facebook')}>Facebook</OptionButton>
+                                    </OptionGroup>
+                                    <OptionGroup label="Loại Nội dung">
+                                        <OptionButton selected={generationMode === 'product'} onClick={() => setGenerationMode('product')}>Sản phẩm cầm tay</OptionButton>
+                                        <OptionButton selected={generationMode === 'fashion'} onClick={() => setGenerationMode('fashion')}>Trang phục</OptionButton>
+                                    </OptionGroup>
+                                    <OptionGroup label="Tỷ lệ ảnh">
+                                        <OptionButton selected={aspectRatio === '9:16'} onClick={() => setAspectRatio('9:16')}>9:16</OptionButton>
+                                        <OptionButton selected={aspectRatio === '16:9'} onClick={() => setAspectRatio('16:9')}>16:9</OptionButton>
+                                    </OptionGroup>
+                                    <OptionGroup label="Số lượng kết quả">
+                                        <select
+                                            value={numberOfResults}
+                                            onChange={(e) => setNumberOfResults(Number(e.target.value))}
+                                            className="bg-blue-800 text-blue-200 border-b-4 border-blue-900 rounded-lg px-6 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            {[...Array(5)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+                                        </select>
+                                    </OptionGroup>
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
@@ -491,7 +645,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex justify-center">
                                 <button
                                     onClick={handleGenerateContent}
-                                    disabled={!modelImage || !productImage || isLoading}
+                                    disabled={!modelImage || !productImage || isLoading || !isKeySet}
                                     className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg border-b-4 border-blue-800 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transform active:translate-y-1"
                                 >
                                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin"/> : <WandIcon />}

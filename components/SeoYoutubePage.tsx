@@ -206,6 +206,30 @@ const SeoYoutubePage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                     value={videoTitle}
                                     onChange={(e) => setVideoTitle(e.target.value)}
                                 ></textarea>
+                                
+                                 {/* API Key Section */}
+                                 <div className="space-y-2 bg-gray-900/50 p-3 rounded-md border border-gray-600 mt-4">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase">API Keys</h4>
+                                    <div className="space-y-1">
+                                        {apiKeys.length > 0 ? apiKeys.slice(0, 3).map(key => {
+                                            const status = apiKeyStatuses[key] || 'checking';
+                                            const { text, color, icon } = statusMap[status];
+                                            return (
+                                                <div key={key} className="flex items-center justify-between p-2 rounded bg-gray-800 text-xs border border-gray-700">
+                                                    <div className="flex items-center space-x-2">
+                                                        {icon}
+                                                        <span className="text-slate-300 font-mono">{formatKeyForDisplay(key)}</span>
+                                                    </div>
+                                                    <span className={`font-semibold px-1.5 py-0.5 rounded-full ${color}`}>{text}</span>
+                                                </div>
+                                            );
+                                        }) : <p className="text-xs text-slate-500 text-center">Chưa có API Key.</p>}
+                                    </div>
+                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full text-xs bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center gap-2 py-2 rounded transition-colors">
+                                        <KeyIcon className="w-3 h-3"/> {isKeySet ? 'Quản lý API Key' : 'Thiết lập API Key'}
+                                    </button>
+                                </div>
+
                                 <button 
                                     onClick={handleGenerateTitles}
                                     disabled={isGeneratingTitles || !videoTitle.trim() || !isKeySet} 
@@ -214,7 +238,6 @@ const SeoYoutubePage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                     {isGeneratingTitles ? <Loader2 className="w-5 h-5 animate-spin"/> : <SparklesIcon className="w-5 h-5"/> }
                                     <span>{isGeneratingTitles ? 'Đang tạo...' : 'Tạo Gợi Ý Tiêu Đề'}</span>
                                 </button>
-                                 <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-3 text-xs text-slate-400 hover:text-white flex items-center justify-center gap-2 py-1"><KeyIcon className="w-4 h-4"/> Quản lý API Key</button>
                             </div>
                             
                             {suggestedTitles.length > 0 && (

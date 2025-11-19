@@ -277,6 +277,29 @@ const ThumbnailGeneratorPage: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                             <div className="lg:col-span-1 flex flex-col gap-6 overflow-y-auto pr-2">
                                 <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700 space-y-4">
                                     <h3 className="text-lg font-bold text-white">1. Tùy chỉnh</h3>
+                                    
+                                     <div className="space-y-2 bg-slate-800/50 p-3 rounded-md border border-slate-600">
+                                        <h4 className="text-xs font-bold text-slate-400 uppercase">API Keys</h4>
+                                        <div className="space-y-1">
+                                            {apiKeys.length > 0 ? apiKeys.slice(0, 3).map(key => {
+                                                const status = apiKeyStatuses[key] || 'checking';
+                                                const { text, color, icon } = statusMap[status];
+                                                return (
+                                                    <div key={key} className="flex items-center justify-between p-2 rounded bg-slate-900 text-xs border border-slate-700">
+                                                        <div className="flex items-center space-x-2">
+                                                            {icon}
+                                                            <span className="text-slate-300 font-mono">{formatKeyForDisplay(key)}</span>
+                                                        </div>
+                                                        <span className={`font-semibold px-1.5 py-0.5 rounded-full ${color}`}>{text}</span>
+                                                    </div>
+                                                );
+                                            }) : <p className="text-xs text-slate-500 text-center">Chưa có API Key.</p>}
+                                        </div>
+                                        <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full text-xs bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center gap-2 py-2 rounded transition-colors">
+                                            <KeyIcon className="w-3 h-3"/> {isKeySet ? 'Quản lý API Key' : 'Thiết lập API Key'}
+                                        </button>
+                                    </div>
+
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">Nền tảng</label>
                                         <div className="flex space-x-2">
@@ -368,7 +391,6 @@ const ThumbnailGeneratorPage: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                                     <button onClick={handleGenerateThumbnails} disabled={isGenerationDisabled} className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-bold transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 w-full mt-2 text-lg">
                                         {isGenerating ? <><Loader2 className="w-6 h-6 animate-spin"/> Đang tạo...</> : 'Tạo hình thu nhỏ'}
                                     </button>
-                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full text-xs text-slate-400 hover:text-white flex items-center justify-center gap-2 py-1"><KeyIcon className="w-4 h-4"/> Quản lý API Key</button>
                                 </div>
                             </div>
                             <div className="lg:col-span-3 flex flex-col">

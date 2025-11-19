@@ -1,11 +1,11 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader2, ClipboardIcon as ClipboardIconLucide, CheckCircle as CheckCircleIconLucide } from 'lucide-react';
 import * as xlsx from 'xlsx';
-import { BackIcon, XCircleIcon, DownloadIcon, UploadIcon } from './Icons';
+import { BackIcon, XCircleIcon, DownloadIcon, UploadIcon, KeyIcon, CheckCircleIcon } from './Icons';
 import * as geminiService from '../services/geminiService';
 import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError, API_LIMIT_ERROR_MESSAGE } from '../utils';
+
+const formatKeyForDisplay = (key: string) => `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
 
 const PromptToolPage = ({ onBack }: { onBack: () => void; }) => {
     const [apiKeys, setApiKeys] = useState<string[]>([]);
@@ -37,6 +37,14 @@ const PromptToolPage = ({ onBack }: { onBack: () => void; }) => {
     const [step3Result, setStep3Result] = useState('');
     const [isGeneratingStep3, setIsGeneratingStep3] = useState(false);
     const [step3CopySuccess, setStep3CopySuccess] = useState(false);
+
+    const statusMap: {[key: string]: {text: string, color: string, icon: React.ReactNode}} = {
+        ready: { text: 'Sẵn sàng', color: 'bg-green-500/80 text-white', icon: <CheckCircleIcon className="w-4 h-4 text-green-400" /> },
+        exhausted: { text: 'Hết hạn', color: 'bg-red-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-red-300" /> },
+        invalid: { text: 'Không hợp lệ', color: 'bg-yellow-500/80 text-black', icon: <XCircleIcon className="w-4 h-4 text-yellow-800" /> },
+        error: { text: 'Lỗi', color: 'bg-gray-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-gray-300" /> },
+        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <Loader2 className="animate-spin h-4 w-4 text-white" /> }
+    };
     
     useEffect(() => {
         const storedKeys = localStorage.getItem("gemini-api-keys");
@@ -321,6 +329,29 @@ const PromptToolPage = ({ onBack }: { onBack: () => void; }) => {
                     <h2 className="text-xl font-bold mb-4 text-cyan-300">Bước 1: Tạo Bibles & Dàn ý</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
+                            {/* API Key Section */}
+                             <div className="bg-blue-950/50 p-4 rounded-lg border border-blue-800 mb-4">
+                                <h3 className="text-sm font-semibold text-gray-200 mb-3 flex items-center"><KeyIcon className="w-4 h-4 mr-2 text-yellow-400" />Quản lý API Key</h3>
+                                <div className="space-y-2 mb-3">
+                                    {apiKeys.length > 0 ? apiKeys.slice(0, 3).map(key => {
+                                        const status = apiKeyStatuses[key] || 'checking';
+                                        const { text, color, icon } = statusMap[status];
+                                        return (
+                                            <div key={key} className="flex items-center justify-between p-2 rounded-md bg-blue-900 text-xs">
+                                                <div className="flex items-center space-x-2">
+                                                    {icon}
+                                                    <span className="text-gray-300 font-mono">{formatKeyForDisplay(key)}</span>
+                                                </div>
+                                                <span className={`font-semibold px-1.5 py-0.5 rounded-full ${color}`}>{text}</span>
+                                            </div>
+                                        );
+                                    }) : <p className="text-xs text-gray-400 text-center py-1">Chưa có API Key nào.</p>}
+                                </div>
+                                <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full px-3 py-1.5 bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-lg text-sm transition-colors">
+                                    {isKeySet ? `Quản lý ${apiKeys.length} Keys` : 'Thiết lập API Keys'}
+                                </button>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-semibold mb-2 text-gray-300">Nội dung kịch bản</label>
                                 <textarea value={step1Content} onChange={(e) => setStep1Content(e.target.value)} rows={5} className="w-full p-2 bg-blue-800 border border-blue-700 rounded-md" placeholder="Dán nội dung kịch bản của bạn vào đây..."></textarea>
@@ -349,7 +380,6 @@ const PromptToolPage = ({ onBack }: { onBack: () => void; }) => {
                                 </div>
                             </div>
                             <button onClick={handleGenerateStep1} disabled={isGeneratingStep1 || !isKeySet} className="w-full flex items-center justify-center gap-2 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-900 rounded-lg font-semibold">{isGeneratingStep1 ? <><Loader2 className="w-5 h-5 animate-spin" /> Đang tạo...</> : "Tạo Bước 1"}</button>
-                            {!isKeySet && <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold">Thiết lập API Key</button>}
                         </div>
                         <div className="relative">
                             <textarea value={step1Result} readOnly rows={10} className="w-full h-full p-2 bg-blue-950 border border-blue-700 rounded-md" placeholder="Kết quả Bước 1..."></textarea>
