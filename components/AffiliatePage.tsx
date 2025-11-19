@@ -358,7 +358,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     // New State for Reference Image
     const [referenceImage, setReferenceImage] = useState<ImageData | null>(null);
     
-    const [generatedData, setGeneratedData] = useState<any[] | null>(null);
+    const [generatedData, setGeneratedData] = useState<{id: string, imageUrl: string | null, scriptData: any}[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -518,7 +518,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
             const results = await Promise.all(promises);
             setGeneratedData(results.map((res, index) => ({ 
                 id: `result-${index}-${Date.now()}`,
-                imageUrl: `data:image/jpeg;base64,${res.generatedImageBase64}`,
+                imageUrl: res.generatedImageBase64 ? `data:image/jpeg;base64,${res.generatedImageBase64}` : null,
                 scriptData: res.scriptData,
             })));
 
@@ -687,15 +687,25 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                         <div className="lg:col-span-1 relative group">
                                             <h3 className="text-xl font-semibold text-gray-300 mb-3">Ảnh quảng cáo</h3>
-                                            <img src={data.imageUrl} alt={`Generated content ${index + 1}`} className="w-full object-contain rounded-lg shadow-lg"/>
-                                            <a 
-                                                href={data.imageUrl} 
-                                                download={`affiliate_image_${index + 1}.jpg`}
-                                                className="absolute bottom-2 right-2 p-2 bg-lime-700/80 hover:bg-lime-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                                title="Tải xuống"
-                                            >
-                                                <DownloadIcon className="w-6 h-6" />
-                                            </a>
+                                            {data.imageUrl ? (
+                                                <>
+                                                    <img src={data.imageUrl} alt={`Generated content ${index + 1}`} className="w-full object-contain rounded-lg shadow-lg"/>
+                                                    <a 
+                                                        href={data.imageUrl} 
+                                                        download={`affiliate_image_${index + 1}.jpg`}
+                                                        className="absolute bottom-2 right-2 p-2 bg-lime-700/80 hover:bg-lime-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                        title="Tải xuống"
+                                                    >
+                                                        <DownloadIcon className="w-6 h-6" />
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <div className="w-full h-64 bg-lime-900/50 rounded-lg flex flex-col items-center justify-center text-lime-500 border border-lime-800 p-4">
+                                                    <XCircleIcon className="w-10 h-10 mb-2 opacity-50" />
+                                                    <p className="text-center font-semibold">Không thể tạo ảnh (Lỗi API/Hạn mức)</p>
+                                                    <p className="text-center text-sm mt-1 opacity-75">Tuy nhiên, kịch bản đã được tạo thành công bên dưới.</p>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="lg:col-span-2">
                                             <AffiliateScriptDisplay

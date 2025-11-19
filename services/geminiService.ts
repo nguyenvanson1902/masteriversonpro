@@ -418,11 +418,11 @@ export async function getVideosOperationStatus(apiKey: string, operation: any): 
     return await ai.operations.getVideosOperation({ operation: operation });
 }
 
-export async function generateFullAffiliateScript(apiKey: string, options: any): Promise<{ generatedImageBase64: string, scriptData: any }> {
+export async function generateFullAffiliateScript(apiKey: string, options: any): Promise<{ generatedImageBase64: string | null, scriptData: any }> {
     const ai = getAiClient(apiKey);
+    // Gemini 2.5 Flash Image is the standard for general image tasks
     const imageGenModel = 'gemini-2.5-flash-image';
-    const scriptGenModel = 'gemini-2.5-pro';
-
+    
     // Step 1: Generate the image
     let imageGenPrompt = `Create a realistic image for a ${options.platform} video.
     - Aspect Ratio: ${options.aspectRatio}.
@@ -434,12 +434,10 @@ export async function generateFullAffiliateScript(apiKey: string, options: any):
     - Video suggestions: ${options.productSuggestion}.
     - The image should look like a high-quality, authentic social media post.`;
     
-    // If a reference/background image is provided, add instructions for it
     if (options.referenceImageBase64) {
         imageGenPrompt += `\n- IMPORTANT: Use the third provided image (Reference/Background) as the main stylistic or environmental reference for the background and lighting.`;
     }
 
-    // FIX: Explicitly type imageGenParts as any[] to allow for mixed content types (text and inlineData).
     const imageGenParts: any[] = [
         { text: imageGenPrompt },
         { inlineData: { mimeType: 'image/jpeg', data: options.modelImageBase64 } },
@@ -450,34 +448,49 @@ export async function generateFullAffiliateScript(apiKey: string, options: any):
         imageGenParts.push({ inlineData: { mimeType: 'image/jpeg', data: options.referenceImageBase64 } });
     }
 
-    const imageResponse = await ai.models.generateContent({
-        model: imageGenModel,
-        contents: { parts: imageGenParts },
-        config: {
-            responseModalities: [Modality.IMAGE],
-        },
-    });
+    let generatedImageBase64: string | null = null;
 
-    const generatedImageBase64 = imageResponse.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-    if (!generatedImageBase64) {
-        throw new Error("Image generation failed.");
+    try {
+        const imageResponse = await ai.models.generateContent({
+            model: imageGenModel,
+            contents: { parts: imageGenParts },
+            config: {
+                responseModalities: [Modality.IMAGE],
+            },
+        });
+        generatedImageBase64 = imageResponse.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+    } catch (error) {
+        // IMPORTANT: If image generation fails (e.g. rate limit on image model only, or region lock),
+        // we swallow the error so the SCRIPT generation (which uses text models) can still succeed.
+        console.warn("Affiliate image generation failed, proceeding to script only.", error);
+        // We do not re-throw here.
     }
     
-    // Step 2: Generate the script using the generated image as context
-    const scriptGenOptions = {
+    // Step 2: Generate the script using the generated image as context OR fallback to text description
+    const scriptGenOptions: any = {
         idea: options.productInfo || "An affiliate video about a product.",
-        summaryScript: `Create a short, engaging script for a ${options.platform} video based on the generated image. The script should be suitable for a ${options.voice} voice with a ${options.region} accent.`,
+        summaryScript: `Create a short, engaging script for a ${options.platform} video. The script should be suitable for a ${options.voice} voice with a ${options.region} accent.`,
         styles: [{ name: "Cinematic", description: "High-quality, social media style." }],
         dialogueLanguage: 'vietnamese',
         sceneCount: 3,
         aspectRatio: options.aspectRatio,
-        characters: [{ name: "Presenter", description: "The person in the generated image." }],
         props: [{ name: "Product", description: options.productInfo }],
-        masterSettingDescription: options.backgroundSuggestion || "The setting in the generated image.",
         includeMusic: true,
         outputLanguage: 'vietnamese',
-        settingImages: [{ base64: generatedImageBase64, mimeType: 'image/jpeg' }]
     };
+
+    if (generatedImageBase64) {
+        // Use generated image for context if available
+        scriptGenOptions.settingImages = [{ base64: generatedImageBase64, mimeType: 'image/jpeg' }];
+        scriptGenOptions.summaryScript += " based on the generated image context.";
+        scriptGenOptions.masterSettingDescription = options.backgroundSuggestion || "The setting in the generated image.";
+        scriptGenOptions.characters = [{ name: "Presenter", description: "The person in the generated image." }];
+    } else {
+        // Fallback to text-based generation
+        scriptGenOptions.summaryScript += " Note: Visual generation failed, so describe a generic but appealing visual setup.";
+        scriptGenOptions.masterSettingDescription = options.backgroundSuggestion || "A clean, professional studio or lifestyle setting.";
+        scriptGenOptions.characters = [{ name: "Presenter", description: "A professional, friendly presenter." }];
+    }
 
     const scriptData = await generateFullScript(apiKey, scriptGenOptions, () => {});
 
