@@ -1,12 +1,10 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as xlsx from 'xlsx';
-import { 
-    BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, 
-    ElaborateIcon, TranslateIcon, DownloadIcon, ClipboardIcon
-} from './Icons';
+import { BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, ElaborateIcon, TranslateIcon, SaveIcon, DownloadIcon } from './Icons';
 import * as geminiService from '../services/geminiService';
 import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError, API_LIMIT_ERROR_MESSAGE } from '../utils';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ClipboardIcon } from 'lucide-react';
 import { PACING_OPTIONS } from '../constants';
 
 const formatKeyForDisplay = (key: string) => `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
@@ -53,8 +51,8 @@ const ApiKeyModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeInUp">
-            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-blue-900 rounded-xl shadow-2xl w-full max-w-2xl border border-blue-800 animate-fadeInUp">
                 <div className="p-6">
                     <h2 className="text-xl font-bold text-gray-100">Quản lý API Keys</h2>
                     <p className="text-gray-400 mt-2 mb-4">Dán API key của bạn vào đây, mỗi key một dòng. Ứng dụng sẽ tự động xoay vòng key khi hết hạn mức.</p>
@@ -119,8 +117,8 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
                     <img src={preview} alt="Uploaded preview" className="w-full h-full object-cover rounded-lg" />
                 ) : (
                     <div className="flex flex-col items-center text-blue-300">
-                        <UploadIcon className="w-8 h-8 mb-2" />
-                        <p className="text-sm">Nhấp để tải lên</p>
+                        <UploadIcon />
+                        <p className="mt-2 text-sm">Nhấp để tải lên</p>
                     </div>
                 )}
             </div>
@@ -146,7 +144,7 @@ const AffiliateScriptDisplay = ({
     scriptData: any;
     setScriptData: (data: any) => void;
     withApiKeyRotation: (apiCall: (apiKey: string) => Promise<any>) => Promise<any>;
-    setError: (error: string | null) => void;
+    setError: (err: string) => void;
 }) => {
     const renumberScenes = (scenes: any[]) => scenes.map((scene, index) => ({ ...scene, scene_number: index + 1 }));
 
@@ -241,7 +239,7 @@ const AffiliateScriptDisplay = ({
     };
     
     return (
-        <div className="mt-12 animate-fadeInUp">
+        <div className="mt-12">
             <div className="text-center mb-4">
                 <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
                     {scriptData.production_plan.title}
@@ -375,7 +373,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
         exhausted: { text: 'Hết hạn', color: 'bg-red-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-red-300" /> },
         invalid: { text: 'Không hợp lệ', color: 'bg-yellow-500/80 text-black', icon: <XCircleIcon className="w-4 h-4 text-yellow-800" /> },
         error: { text: 'Lỗi', color: 'bg-gray-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-gray-300" /> },
-        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <Loader2 className="animate-spin h-4 w-4 text-white" /> }
+        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> }
     };
 
     useEffect(() => {
@@ -386,7 +384,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
               setApiKeys(parsedKeys);
               setIsKeySet(true);
               const initialStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
-              parsedKeys.forEach((key: string) => { initialStatuses[key] = 'ready'; });
+              parsedKeys.forEach((key) => { initialStatuses[key] = 'ready'; });
               setApiKeyStatuses(initialStatuses);
             }
         }
@@ -411,11 +409,10 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     }, []);
     
     const withApiKeyRotation = useCallback(async (apiCall: (apiKey: string) => Promise<any>) => {
-        if (!apiKeys || apiKeys.length === 0) {
-            const msg = "Vui lòng thiết lập API Key trước khi sử dụng.";
-            setError(msg);
-            setIsApiKeyModalOpen(true);
-            throw new Error("API Key not set.");
+        if (apiKeys.length === 0) {
+            const err = "Vui lòng thiết lập API Key trước khi tạo nội dung.";
+            setError(err);
+            throw new Error(err);
         }
         
         const initialIndex = apiKeyIndex.current;
@@ -431,12 +428,6 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 attempts++;
                 continue;
             }
-            
-            // Ensure the key is not just an empty string
-            if (!currentApiKey || currentApiKey.trim() === "") {
-                attempts++;
-                continue;
-            }
 
             try {
                 const result = await apiCall(currentApiKey);
@@ -444,22 +435,20 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 return result;
             } catch (err) {
                 if (isRateLimitError(err)) {
+                    console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is exhausted or rate-limited.`);
                     setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'exhausted' }));
                     attempts++;
                 } else if (isInvalidApiKeyError(err)) {
+                     console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is invalid.`);
                      setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'invalid' }));
                      attempts++;
                 } else {
-                    const errorMessage = getApiErrorMessage(err);
-                    setError(errorMessage);
                     throw err;
                 }
             }
         }
         
-        const limitMsg = API_LIMIT_ERROR_MESSAGE;
-        setError(limitMsg);
-        throw new Error("All available API keys failed or are exhausted.");
+        throw new Error(API_LIMIT_ERROR_MESSAGE);
     }, [apiKeys, apiKeyStatuses]);
 
     const setScriptDataForIndex = (index: number, data: any) => {
@@ -472,12 +461,6 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     };
 
     const handleGenerateContent = useCallback(async () => {
-        if (!isKeySet || apiKeys.length === 0) {
-            setError("Chưa có API Key. Vui lòng nhập API Key để tiếp tục.");
-            setIsApiKeyModalOpen(true);
-            return;
-        }
-
         if (!modelImage || !productImage) {
             setError('Vui lòng tải lên cả ảnh người mẫu và ảnh sản phẩm.');
             return;
@@ -508,10 +491,15 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
 
         } catch (err) {
             console.error(err);
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Đã xảy ra lỗi không xác định.");
+            }
         } finally {
             setIsLoading(false);
         }
-    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation, isKeySet, apiKeys.length]);
+    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation]);
 
     return (
         <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
@@ -554,7 +542,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                             );
                                         }) : <p className="text-sm text-gray-400 text-center py-1">Chưa có API Key nào. Vui lòng nhập key để sử dụng.</p>}
                                     </div>
-                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-2 px-3 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center justify-center">
+                                    <button onClick={() => setIsApiKeyModalOpen(true)} className="w-full mt-2 px-3 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center justify-center shadow-md transform active:scale-95">
                                         {isKeySet ? `Quản lý ${apiKeys.length} Keys` : 'Nhập API Keys (Bắt buộc)'}
                                     </button>
                                 </div>
@@ -645,6 +633,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex justify-center">
                                 <button
                                     onClick={handleGenerateContent}
+                                    disabled={isLoading}
                                     className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg border-b-4 border-blue-800 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transform active:translate-y-1"
                                 >
                                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin"/> : <WandIcon />}
@@ -683,14 +672,22 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                                     </div>
                                 </div>
                             ))}
+                            <div className="flex justify-center">
+                                <button 
+                                    onClick={() => setGeneratedData(null)} 
+                                    className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold transition-colors"
+                                >
+                                    Tạo mới
+                                </button>
+                            </div>
                         </div>
                     )}
                     
                     {error && (
                         <div className="fixed bottom-4 right-4 w-full max-w-md bg-red-800/90 text-white p-4 rounded-lg shadow-lg border border-red-600 backdrop-blur-sm animate-fadeInUp z-50">
                             <div className="flex justify-between items-start">
-                                <p><strong className="font-semibold">Lỗi:</strong> {error}</p>
-                                <button onClick={() => setError(null)} className="p-1"><XCircleIcon className="w-5 h-5 text-white"/></button>
+                                 <div className="whitespace-pre-wrap"><strong className="font-bold">Đã xảy ra lỗi:</strong><br/>{error}</div>
+                                 <button onClick={() => setError(null)} className="p-1 -mt-1 -mr-1"><XCircleIcon className="w-6 h-6"/></button>
                             </div>
                         </div>
                     )}
