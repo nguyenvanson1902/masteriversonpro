@@ -1,11 +1,12 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { GoogleGenAI, Modality, Type } from "@google/genai";
 import * as xlsx from 'xlsx';
-import { BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, ElaborateIcon, TranslateIcon, SaveIcon, DownloadIcon } from './Icons';
+import { 
+    BackIcon, KeyIcon, UploadIcon, WandIcon, CheckCircleIcon, XCircleIcon, 
+    ElaborateIcon, TranslateIcon, DownloadIcon, ClipboardIcon
+} from './Icons';
 import * as geminiService from '../services/geminiService';
 import { getApiErrorMessage, isInvalidApiKeyError, isRateLimitError, API_LIMIT_ERROR_MESSAGE } from '../utils';
-import { Loader2, ClipboardIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { PACING_OPTIONS } from '../constants';
 
 const formatKeyForDisplay = (key: string) => `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
@@ -15,25 +16,6 @@ interface ImageData {
     previewUrl: string;
     base64: string;
 }
-
-// --- Inlined components/Icons.tsx ---
-const FilmIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-    </svg>
-);
-
-const CopyIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-    </svg>
-);
-
-const CheckIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-);
 
 const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -137,8 +119,8 @@ const ImageUploader = ({ title, onImageUpload }: { title: string; onImageUpload:
                     <img src={preview} alt="Uploaded preview" className="w-full h-full object-cover rounded-lg" />
                 ) : (
                     <div className="flex flex-col items-center text-blue-300">
-                        <UploadIcon />
-                        <p className="mt-2 text-sm">Nhấp để tải lên</p>
+                        <UploadIcon className="w-8 h-8 mb-2" />
+                        <p className="text-sm">Nhấp để tải lên</p>
                     </div>
                 )}
             </div>
@@ -160,10 +142,15 @@ const AffiliateScriptDisplay = ({
     setScriptData,
     withApiKeyRotation,
     setError,
+}: {
+    scriptData: any;
+    setScriptData: (data: any) => void;
+    withApiKeyRotation: (apiCall: (apiKey: string) => Promise<any>) => Promise<any>;
+    setError: (error: string | null) => void;
 }) => {
-    const renumberScenes = (scenes) => scenes.map((scene, index) => ({ ...scene, scene_number: index + 1 }));
+    const renumberScenes = (scenes: any[]) => scenes.map((scene, index) => ({ ...scene, scene_number: index + 1 }));
 
-    const handleUpdateScene = (index, updatedScene) => {
+    const handleUpdateScene = (index: number, updatedScene: any) => {
         if (!scriptData) return;
         const newScenes = [...scriptData.scenes];
         newScenes[index] = { ...newScenes[index], ...updatedScene };
@@ -178,7 +165,7 @@ const AffiliateScriptDisplay = ({
     
     const handleDownloadTxtScenesOnly = () => {
         if (!scriptData || !scriptData.scenes) return;
-        const content = scriptData.scenes.map(scene => scene.video_prompt).join('\n\n');
+        const content = scriptData.scenes.map((scene: any) => scene.video_prompt).join('\n\n');
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -192,7 +179,7 @@ const AffiliateScriptDisplay = ({
 
     const handleDownloadXlsx = () => {
         if (!scriptData || !scriptData.scenes) return;
-        const dataForSheet = scriptData.scenes.map((scene, index) => ({
+        const dataForSheet = scriptData.scenes.map((scene: any, index: number) => ({
             'STT': index + 1,
             'prompt': scene.video_prompt,
             'TRẠNG THÁI': '',
@@ -204,7 +191,7 @@ const AffiliateScriptDisplay = ({
         xlsx.writeFile(wb, `${scriptData.production_plan.title.replace(/\s+/g, '_')}_prompts.xlsx`);
     };
 
-    const handleElaborateScene = async (sceneIndex) => {
+    const handleElaborateScene = async (sceneIndex: number) => {
         if (!scriptData) return;
         handleUpdateScene(sceneIndex, { isElaborating: true });
         try {
@@ -220,7 +207,7 @@ const AffiliateScriptDisplay = ({
         }
     };
 
-    const handleTranslate = async (sceneIndex) => {
+    const handleTranslate = async (sceneIndex: number) => {
         if (!scriptData) return;
         const scene = scriptData.scenes[sceneIndex];
         if (scene.translatedPrompt) {
@@ -239,7 +226,7 @@ const AffiliateScriptDisplay = ({
         }
     };
     
-    const handleUpdatePacing = async (sceneIndex, newPacing) => {
+    const handleUpdatePacing = async (sceneIndex: number, newPacing: string) => {
         if (!scriptData) return;
         handleUpdateScene(sceneIndex, { isUpdatingPacing: true });
         try {
@@ -254,7 +241,7 @@ const AffiliateScriptDisplay = ({
     };
     
     return (
-        <div className="mt-12">
+        <div className="mt-12 animate-fadeInUp">
             <div className="text-center mb-4">
                 <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
                     {scriptData.production_plan.title}
@@ -279,7 +266,7 @@ const AffiliateScriptDisplay = ({
             </div>
 
             <div className="max-h-[75vh] overflow-y-auto space-y-4 pr-2">
-                {scriptData.scenes.map((scene, index) => (
+                {scriptData.scenes.map((scene: any, index: number) => (
                     <div key={scene.scene_number} className="bg-blue-900 border border-blue-800 rounded-lg overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/10">
                         <div className="p-4 space-y-4 flex flex-col">
                            <div className="flex justify-between items-start">
@@ -388,7 +375,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
         exhausted: { text: 'Hết hạn', color: 'bg-red-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-red-300" /> },
         invalid: { text: 'Không hợp lệ', color: 'bg-yellow-500/80 text-black', icon: <XCircleIcon className="w-4 h-4 text-yellow-800" /> },
         error: { text: 'Lỗi', color: 'bg-gray-500/80 text-white', icon: <XCircleIcon className="w-4 h-4 text-gray-300" /> },
-        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> }
+        checking: { text: 'Đang kiểm tra...', color: 'bg-blue-500/80 text-white', icon: <Loader2 className="animate-spin h-4 w-4 text-white" /> }
     };
 
     useEffect(() => {
@@ -399,7 +386,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
               setApiKeys(parsedKeys);
               setIsKeySet(true);
               const initialStatuses: { [key: string]: 'ready' | 'exhausted' | 'invalid' | 'error' | 'checking' } = {};
-              parsedKeys.forEach((key) => { initialStatuses[key] = 'ready'; });
+              parsedKeys.forEach((key: string) => { initialStatuses[key] = 'ready'; });
               setApiKeyStatuses(initialStatuses);
             }
         }
@@ -424,8 +411,10 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     }, []);
     
     const withApiKeyRotation = useCallback(async (apiCall: (apiKey: string) => Promise<any>) => {
-        if (apiKeys.length === 0) {
-            setError("Vui lòng thiết lập API Key trước.");
+        if (!apiKeys || apiKeys.length === 0) {
+            const msg = "Vui lòng thiết lập API Key trước khi sử dụng.";
+            setError(msg);
+            setIsApiKeyModalOpen(true);
             throw new Error("API Key not set.");
         }
         
@@ -449,11 +438,9 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                 return result;
             } catch (err) {
                 if (isRateLimitError(err)) {
-                    console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is exhausted or rate-limited.`);
                     setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'exhausted' }));
                     attempts++;
                 } else if (isInvalidApiKeyError(err)) {
-                     console.warn(`API key ${formatKeyForDisplay(currentApiKey)} is invalid.`);
                      setApiKeyStatuses(prev => ({ ...prev, [currentApiKey]: 'invalid' }));
                      attempts++;
                 } else {
@@ -464,7 +451,8 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
             }
         }
         
-        setError(API_LIMIT_ERROR_MESSAGE);
+        const limitMsg = API_LIMIT_ERROR_MESSAGE;
+        setError(limitMsg);
         throw new Error("All available API keys failed or are exhausted.");
     }, [apiKeys, apiKeyStatuses]);
 
@@ -478,6 +466,12 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
     };
 
     const handleGenerateContent = useCallback(async () => {
+        if (!isKeySet || apiKeys.length === 0) {
+            setError("Chưa có API Key. Vui lòng nhập API Key để tiếp tục.");
+            setIsApiKeyModalOpen(true);
+            return;
+        }
+
         if (!modelImage || !productImage) {
             setError('Vui lòng tải lên cả ảnh người mẫu và ảnh sản phẩm.');
             return;
@@ -511,7 +505,7 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation]);
+    }, [modelImage, productImage, aspectRatio, voice, region, numberOfResults, generationMode, outfitSuggestion, backgroundSuggestion, productInfo, productSuggestion, platform, withApiKeyRotation, isKeySet, apiKeys.length]);
 
     return (
         <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center p-4 lg:p-8 font-sans">
@@ -645,7 +639,6 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex justify-center">
                                 <button
                                     onClick={handleGenerateContent}
-                                    disabled={!modelImage || !productImage || isLoading || !isKeySet}
                                     className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg border-b-4 border-blue-800 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transform active:translate-y-1"
                                 >
                                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin"/> : <WandIcon />}
@@ -688,7 +681,12 @@ const AffiliatePage = ({ onBack }: { onBack: () => void }) => {
                     )}
                     
                     {error && (
-                        <div className="mt-4 w-full max-w-3xl mx-auto p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg text-center" dangerouslySetInnerHTML={{ __html: error }} />
+                        <div className="fixed bottom-4 right-4 w-full max-w-md bg-red-800/90 text-white p-4 rounded-lg shadow-lg border border-red-600 backdrop-blur-sm animate-fadeInUp z-50">
+                            <div className="flex justify-between items-start">
+                                <p><strong className="font-semibold">Lỗi:</strong> {error}</p>
+                                <button onClick={() => setError(null)} className="p-1"><XCircleIcon className="w-5 h-5 text-white"/></button>
+                            </div>
+                        </div>
                     )}
                 </main>
             </div>
