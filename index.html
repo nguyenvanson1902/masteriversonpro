@@ -1,402 +1,130 @@
-
 <!DOCTYPE html>
 <html lang="vi">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RIVER SƠN AI MASTER DIRECTOR</title>
-    <meta name="description" content="Công cụ tạo prompt và kịch bản video AI." />
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & ReactDOM (UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Google AI Studio SDK (cho Veo/Video nếu cần) -->
-    <script src="https://aistudio.google.com/static/studio-sdk.js" defer></script>
+    <title>RIVER SON AI MASTER DIRECTOR</title>
 
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Một công cụ tạo prompt chi tiết để sản xuất video bằng AI, bao gồm Hồ Sơ Nhân Vật và Kịch Bản Phân Cảnh nhiều cảnh dựa trên cài đặt của người dùng." />
+    <meta name="theme-color" content="#1a2e05"> <!-- Corresponds to bg-lime-950 -->
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="RIVER SON AI MASTER DIRECTOR">
+    <meta property="og:description" content="Công cụ tạo prompt chi tiết để sản xuất video bằng AI, bao gồm Hồ Sơ Nhân Vật, Kịch Bản Phân Cảnh và nhiều hơn nữa.">
+    
+    <!-- Scripts & Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://aistudio.google.com/static/studio-sdk.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-      body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #1a2e05; color: #ecfccb; }
-      .animate-fadeInUp { animation: fadeInUp 0.5s ease-out forwards; }
-      @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-      
-      /* Aurora Effects */
-      @keyframes aurora-glow { 0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #84cc16; } 50% { text-shadow: 0 0 5px #fff, 0 0 20px #4ade80; } }
-      .text-aurora { animation: aurora-glow 4s ease-in-out infinite; }
-      
-      /* Scrollbar */
-      ::-webkit-scrollbar { width: 8px; height: 8px; }
-      ::-webkit-scrollbar-track { background: #1a2e05; }
-      ::-webkit-scrollbar-thumb { background: #4d7c0f; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #65a30d; }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
+      .animate-shimmer {
+        background: linear-gradient(to right, #84cc16 20%, #a3e635 40%, #d9f99d 60%, #84cc16 80%);
+        background-size: 200% auto;
+        animation: shimmer 5s linear infinite;
+      }
+       @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fadeInUp {
+        animation: fadeInUp 0.5s ease-out forwards;
+      }
+      /* New Aurora Effect - Green Theme */
+      @keyframes aurora-glow {
+        0%, 100% {
+            text-shadow: 0 0 5px #fff, 0 0 10px #84cc16, 0 0 15px #84cc16, 0 0 20px #84cc16;
+        }
+        50% {
+            text-shadow: 0 0 5px #fff, 0 0 10px #4ade80, 0 0 15px #4ade80, 0 0 20px #4ade80, 0 0 2px rgba(255,255,255,0.9);
+        }
+      }
+      .animate-aurora {
+        background: linear-gradient(270deg, #a3e635, #4ade80, #34d399, #a3e635);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: aurora-glow 6s ease-in-out infinite;
+      }
+
+      /* New Button Aurora Effect */
+       @keyframes aurora-border {
+        0%, 100% {
+            border-color: #84cc16; /* lime-500 */
+            box-shadow: 0 0 15px 0px rgba(132, 204, 22, 0.6);
+        }
+        50% {
+            border-color: #a3e635; /* lime-400 */
+            box-shadow: 0 0 15px 0px rgba(163, 230, 53, 0.6);
+        }
+    }
+    .animate-aurora-button {
+      border: 2px solid transparent;
+      animation: aurora-border 4s ease-in-out infinite;
+    }
+    /* New 3D Aurora Logo Effect */
+    @keyframes logo-aurora {
+        0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #4d7c0f, 0 0 15px #65a30d, 2px 2px 2px #111; } 
+        50%  { text-shadow: 0 0 5px #fff, 0 0 10px #84cc16, 0 0 15px #bef264, 2px 2px 2px #111; }
+    }
+    .logo-text-3d-aurora {
+        font-size: 5rem;
+        font-weight: 900; /* black */
+        color: #e5e7eb; /* gray-200 */
+        animation: logo-aurora 4s linear infinite;
+        text-align: center;
+        margin-bottom: 2rem;
+        line-height: 1;
+    }
+     @media (max-width: 640px) {
+      .logo-text-3d-aurora {
+        font-size: 3.5rem;
+      }
+    }
+    /* Green glowing text effect */
+    @keyframes aurora-glow-green {
+        0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #65a30d, 0 0 15px #65a30d; } 
+        50%  { text-shadow: 0 0 5px #fff, 0 0 10px #84cc16, 0 0 15px #84cc16; } 
+    }
+    .text-aurora-glow-7-colors {
+        color: #ecfccb; /* lime-100 */
+        animation: aurora-glow-green 4s linear infinite;
+    }
     </style>
-<script type="importmap">
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.24.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.545.0",
     "xlsx": "https://aistudiocdn.com/xlsx@^0.18.5"
   }
 }
 </script>
 </head>
-<body>
+  <body class="bg-lime-950">
     <div id="root"></div>
-
-    <!-- Main Application Script -->
-    <script type="text/babel" data-type="module">
-        // IMPORTS FROM CDN
-        import { GoogleGenAI } from "https://esm.sh/@google/genai@0.1.1";
-        import { Loader2, Mic, Sparkles, Check, Clipboard, Trash2, RefreshCw, AlertCircle } from "https://esm.sh/lucide-react@0.263.1";
-        import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs";
-
-        const { useState, useEffect, useRef, useCallback, Suspense } = React;
-
-        // ==========================================
-        // 1. ICONS & UI COMPONENTS
-        // ==========================================
-        
-        const Icons = {
-            Key: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L4.5 17.5V21h3.5l5.757-5.757A6 6 0 0115 7z" /></svg>,
-            Director: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8,8 L56,16 L56,8 L8,8 Z" fill="currentColor" strokeLinejoin="round" /><path d="M8,18 L56,26 L56,56 L8,56 Z" fill="currentColor" strokeLinejoin="round" /></svg>,
-            Mic: ({ className }) => <Mic className={className} />,
-            FileText: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-            Sparkles: ({ className }) => <Sparkles className={className} />,
-            Image: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
-            Wand: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-            Cube: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>,
-            Back: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>,
-            Check: ({ className }) => <Check className={className} />,
-            Copy: ({ className }) => <Clipboard className={className} />,
-            Download: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>,
-            Upload: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
-            Play: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>,
-            Send: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
-        };
-
-        // ==========================================
-        // 2. CONSTANTS & UTILS
-        // ==========================================
-        
-        const STYLES = [ "Hoạt hình 3D Pixar", "Anime Nhật Bản", "Studio Ghibli", "Điện ảnh", "Hoạt hình đất sét", "Hơi nước Vaporwave", "Phim tài liệu", "Phim cổ điển", "Tranh màu nước", "Tương lai Cyberpunk", "Hoạt hình 2D cổ điển", "Nghệ thuật Pixel", "Tối giản", "Kinh dị Gothic", "Lãng mạn", "Fantasy hùng vĩ", "Khoa học viễn tưởng", "Siêu thực", "Cổ tích", "Tranh sơn dầu" ];
-        const RATIOS = ['16:9', '9:16', '1:1'];
-        const NEGATIVE_PROMPT = 'blurry, low quality, noisy, watermark, text, signature, speech bubbles, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, blurred, grainy, signature, cut off, draft';
-
-        const TTS_VOICES = [
-            { label: 'Nam Miền Bắc (Mặc định)', value: 'Zephyr' },
-            { label: 'Nữ Miền Bắc (Mặc định)', value: 'Kore' },
-            { label: 'Nam Miền Nam (Mặc định)', value: 'Puck' },
-            { label: 'Nữ Miền Nam (Mặc định)', value: 'Charon' },
-            { label: 'Nam Kể Chuyện', value: 'Fenrir' }
-        ];
-
-        // Polyfill for process.env to prevent crashes
-        window.process = { env: {} };
-
-        const getAiClient = (apiKey) => new GoogleGenAI({ apiKey });
-
-        async function validateApiKey(apiKey) {
-            try {
-                const ai = getAiClient(apiKey);
-                await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: 'test' });
-                return 'ready';
-            } catch (err) {
-                const msg = err.toString().toLowerCase();
-                if (msg.includes('429') || msg.includes('quota')) return 'exhausted';
-                return 'invalid';
-            }
-        }
-
-        const fileToBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
-
-        // ==========================================
-        // 3. COMPONENTS
-        // ==========================================
-
-        // --- API Key Modal ---
-        const ApiKeyModal = ({ isOpen, onClose, onSave, initialKeys }) => {
-            const [input, setInput] = useState(initialKeys.join('\n'));
-            if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 bg-black/80 z-[999] flex items-center justify-center p-4">
-                    <div className="bg-lime-900 border border-lime-700 rounded-xl w-full max-w-lg p-6 shadow-2xl">
-                        <h2 className="text-xl font-bold text-lime-100 mb-2">Cài đặt API Key</h2>
-                        <p className="text-lime-400 text-sm mb-4">Nhập danh sách Google Gemini API Key (mỗi key một dòng).</p>
-                        <textarea value={input} onChange={e => setInput(e.target.value)} className="w-full h-40 bg-lime-950 border border-lime-700 rounded p-2 text-lime-200 font-mono text-sm" placeholder="AIzaSy..."></textarea>
-                        <div className="flex justify-end gap-3 mt-4">
-                            <button onClick={onClose} className="px-4 py-2 text-lime-300 hover:text-white">Đóng</button>
-                            <button onClick={() => onSave(input.split('\n').map(k => k.trim()).filter(Boolean))} className="px-4 py-2 bg-lime-600 hover:bg-lime-500 text-white rounded font-bold">Lưu</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- Prompt Wizard Page ---
-        const PromptWizardPage = ({ onBack }) => {
-            const [formData, setFormData] = useState({ context: '', character: '', action: '', details: '', selectedStyles: [], aspectRatio: '16:9' });
-            const [result, setResult] = useState('');
-            
-            const generate = () => {
-                const { context, character, action, details, selectedStyles, aspectRatio } = formData;
-                let prompt = [context, character, action, details].filter(Boolean).join(', ');
-                if (selectedStyles.length) prompt += `, style: ${selectedStyles.join(', ')}`;
-                prompt += `, aspect ratio ${aspectRatio}. --no ${NEGATIVE_PROMPT}`;
-                setResult(prompt);
-            };
-
-            return (
-                <div className="min-h-screen bg-lime-950 p-6 animate-fadeInUp">
-                    <button onClick={onBack} className="flex items-center text-lime-400 hover:text-white mb-6"><Icons.Back className="w-5 h-5 mr-2"/> Quay lại</button>
-                    <h1 className="text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400">Trợ Lý Tạo Prompt</h1>
-                    
-                    <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <div className="bg-lime-900/50 p-4 rounded-lg border border-lime-800">
-                                <label className="block text-sm font-bold text-lime-300 mb-1">Bối cảnh</label>
-                                <input type="text" className="w-full bg-lime-950 border border-lime-700 rounded p-2 text-lime-100" placeholder="Rừng rậm amazon, đường phố Tokyo..." value={formData.context} onChange={e => setFormData({...formData, context: e.target.value})} />
-                            </div>
-                            <div className="bg-lime-900/50 p-4 rounded-lg border border-lime-800">
-                                <label className="block text-sm font-bold text-lime-300 mb-1">Nhân vật</label>
-                                <input type="text" className="w-full bg-lime-950 border border-lime-700 rounded p-2 text-lime-100" placeholder="Chiến binh robot, cô gái mặc áo dài..." value={formData.character} onChange={e => setFormData({...formData, character: e.target.value})} />
-                            </div>
-                            <div className="bg-lime-900/50 p-4 rounded-lg border border-lime-800">
-                                <label className="block text-sm font-bold text-lime-300 mb-1">Hành động <span className="text-red-400">*</span></label>
-                                <input type="text" className="w-full bg-lime-950 border border-lime-700 rounded p-2 text-lime-100" placeholder="Đang chạy, đang uống cafe..." value={formData.action} onChange={e => setFormData({...formData, action: e.target.value})} />
-                            </div>
-                            
-                            <div className="bg-lime-900/50 p-4 rounded-lg border border-lime-800">
-                                <label className="block text-sm font-bold text-lime-300 mb-2">Phong cách</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {STYLES.slice(0, 8).map(s => (
-                                        <button key={s} onClick={() => {
-                                            const newStyles = formData.selectedStyles.includes(s) ? formData.selectedStyles.filter(x => x !== s) : [...formData.selectedStyles, s];
-                                            setFormData({...formData, selectedStyles: newStyles});
-                                        }} className={`px-2 py-1 text-xs rounded border ${formData.selectedStyles.includes(s) ? 'bg-lime-600 border-lime-500 text-white' : 'bg-lime-900 border-lime-700 text-lime-400'}`}>{s}</button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <button onClick={generate} disabled={!formData.action} className="w-full py-3 bg-gradient-to-r from-lime-600 to-green-600 hover:from-lime-500 hover:to-green-500 text-white font-bold rounded-lg shadow-lg disabled:opacity-50">Tạo Prompt</button>
-                        </div>
-
-                        <div className="bg-lime-900 border border-lime-700 rounded-xl p-6 flex flex-col">
-                            <h3 className="text-xl font-bold text-lime-200 mb-4">Kết quả</h3>
-                            <textarea readOnly value={result} className="w-full flex-grow bg-lime-950 border border-lime-800 rounded p-4 text-lime-100 font-mono text-sm resize-none" placeholder="Prompt sẽ hiện ở đây..."></textarea>
-                            {result && (
-                                <button onClick={() => navigator.clipboard.writeText(result)} className="mt-4 flex items-center justify-center w-full py-2 bg-lime-700 hover:bg-lime-600 rounded text-white font-bold">
-                                    <Icons.Copy className="w-4 h-4 mr-2"/> Sao chép
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- Affiliate Page (Simplified for brevity but functional) ---
-        const AffiliatePage = ({ onBack }) => {
-            const [loading, setLoading] = useState(false);
-            const [resultImage, setResultImage] = useState(null);
-            const [modelImg, setModelImg] = useState(null);
-            const [prodImg, setProdImg] = useState(null);
-            const [refImg, setRefImg] = useState(null); // Added Ref Image
-            const [prompt, setPrompt] = useState("");
-
-            const handleUpload = async (e, setter) => {
-                if (e.target.files[0]) setter(await fileToBase64(e.target.files[0]));
-            }
-
-            const generate = async () => {
-                const keys = JSON.parse(localStorage.getItem('gemini-api-keys') || '[]');
-                if(!keys.length) return alert("Vui lòng nhập API Key ở trang chủ!");
-                if(!modelImg || !prodImg) return alert("Cần ảnh mẫu và sản phẩm!");
-                
-                setLoading(true);
-                try {
-                    const ai = new GoogleGenAI({ apiKey: keys[0] }); // Simple rotation logic could be added
-                    const parts = [
-                        { text: `Create a realistic affiliate marketing image. ${prompt}. Combine the person and product naturally.` },
-                        { inlineData: { mimeType: "image/jpeg", data: modelImg } },
-                        { inlineData: { mimeType: "image/jpeg", data: prodImg } }
-                    ];
-                    if (refImg) {
-                        parts.push({ inlineData: { mimeType: "image/jpeg", data: refImg } });
-                        parts[0].text += " Use the third image as style/background reference.";
-                    }
-
-                    const response = await ai.models.generateContent({
-                        model: "gemini-2.5-flash-image",
-                        contents: { parts },
-                        config: { responseModalities: ["IMAGE"] }
-                    });
-                    
-                    const imgData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                    if(imgData) setResultImage(`data:image/jpeg;base64,${imgData}`);
-                    else alert("Lỗi tạo ảnh.");
-                } catch (e) { alert("Lỗi API: " + e.message); }
-                setLoading(false);
-            };
-
-            return (
-                <div className="min-h-screen bg-lime-950 p-6 animate-fadeInUp">
-                    <button onClick={onBack} className="text-lime-400 hover:text-white mb-6 flex items-center"><Icons.Back className="w-5 h-5 mr-2"/> Quay lại</button>
-                    <h1 className="text-3xl font-bold text-center text-lime-100 mb-8">Tạo Ảnh Affiliate</h1>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                        {[
-                            { label: "1. Ảnh Người Mẫu", set: setModelImg, val: modelImg },
-                            { label: "2. Ảnh Sản Phẩm", set: setProdImg, val: prodImg },
-                            { label: "3. Ảnh Tham Khảo (Tùy chọn)", set: setRefImg, val: refImg }
-                        ].map((item, i) => (
-                            <div key={i} className="bg-lime-900/50 p-4 rounded border border-lime-700 text-center">
-                                <p className="text-lime-200 font-bold mb-2">{item.label}</p>
-                                <div className="aspect-square bg-lime-950 rounded border-2 border-dashed border-lime-600 flex items-center justify-center relative overflow-hidden">
-                                    {item.val ? <img src={`data:image/jpeg;base64,${item.val}`} className="w-full h-full object-cover"/> : <span className="text-lime-600 text-4xl">+</span>}
-                                    <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => handleUpload(e, item.set)} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="max-w-3xl mx-auto mt-6">
-                        <label className="text-lime-300 font-bold">Mô tả chi tiết (Bối cảnh, trang phục...)</label>
-                        <textarea className="w-full mt-2 p-3 bg-lime-900 border border-lime-700 rounded text-lime-100" rows={3} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Ví dụ: Người mẫu đang cầm sản phẩm cười tươi trên bãi biển..."></textarea>
-                        <button onClick={generate} disabled={loading} className="w-full mt-4 py-3 bg-lime-600 hover:bg-lime-500 text-white font-bold rounded shadow-lg flex justify-center items-center">
-                            {loading ? <Loader2 className="animate-spin mr-2"/> : <Icons.Wand className="mr-2"/>} {loading ? "Đang vẽ..." : "Tạo Ảnh"}
-                        </button>
-                    </div>
-
-                    {resultImage && (
-                        <div className="max-w-lg mx-auto mt-8 bg-lime-900 p-4 rounded border border-lime-700 text-center">
-                            <h3 className="text-lime-200 font-bold mb-4">Kết quả</h3>
-                            <img src={resultImage} className="w-full rounded shadow-lg" />
-                            <a href={resultImage} download="affiliate-result.jpg" className="inline-flex items-center mt-4 px-6 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded">
-                                <Icons.Download className="w-5 h-5 mr-2" /> Tải về
-                            </a>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-        
-        // --- Home/Selector Page ---
-        const AppSelector = ({ setPage, setIsKeyModal }) => {
-            const apps = [
-                { id: 'wizard', title: "Trợ Lý Prompt Video", desc: "Tạo prompt chi tiết từng bước.", icon: <Icons.Wand className="w-12 h-12"/> },
-                { id: 'affiliate', title: "Video Affiliate", desc: "Tạo ảnh quảng cáo sản phẩm.", icon: <Icons.Sparkles className="w-12 h-12"/> },
-                { id: 'story', title: "Storyteller", desc: "Kịch bản & Giọng đọc AI.", icon: <Icons.Mic className="w-12 h-12"/> },
-                { id: 'director', title: "AI Director", desc: "Đạo diễn video & Phân cảnh.", icon: <Icons.Director className="w-12 h-12"/> },
-            ];
-
-            return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    <h1 className="text-4xl md:text-6xl font-black text-center mb-4 text-aurora">RIVER SƠN MASTER</h1>
-                    <p className="text-lime-400 mb-12 text-center max-w-2xl">Bộ công cụ AI toàn năng cho nhà sáng tạo nội dung video.</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl px-4">
-                        {apps.map(app => (
-                            <button key={app.id} onClick={() => setPage(app.id)} className="bg-lime-900/80 hover:bg-lime-800 border border-lime-700 hover:border-lime-500 p-8 rounded-2xl flex flex-col items-center text-center transition-all hover:-translate-y-2 shadow-xl group">
-                                <div className="text-lime-400 group-hover:text-white mb-4 transition-colors">{app.icon}</div>
-                                <h3 className="text-xl font-bold text-lime-100 mb-2">{app.title}</h3>
-                                <p className="text-lime-400/70 text-sm">{app.desc}</p>
-                            </button>
-                        ))}
-                        {/* Placeholder Cards */}
-                        {[1,2,3,4].map(i => (
-                            <div key={i} className="bg-lime-900/30 border border-lime-800/50 p-8 rounded-2xl flex flex-col items-center text-center opacity-60 cursor-not-allowed relative">
-                                <div className="absolute top-2 right-2 bg-yellow-600 text-white text-[10px] px-2 py-1 rounded-full font-bold">SẮP RA MẮT</div>
-                                <Icons.Cube className="w-12 h-12 text-lime-600 mb-4"/>
-                                <h3 className="text-xl font-bold text-lime-600 mb-2">Công cụ Mới</h3>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-12 flex gap-4">
-                        <button onClick={() => setIsKeyModal(true)} className="flex items-center px-6 py-3 bg-lime-800 hover:bg-lime-700 text-lime-100 rounded-full font-bold border border-lime-600 transition-all">
-                            <Icons.Key className="w-5 h-5 mr-2"/> Cài đặt API Key
-                        </button>
-                    </div>
-                    
-                    <footer className="mt-16 text-lime-600 text-sm text-center">
-                        <p>Phát triển bởi River Sơn Master</p>
-                    </footer>
-                </div>
-            );
-        };
-
-        // --- PLACEHOLDER COMPONENTS FOR OTHER PAGES (To keep file size manageable but functional) ---
-        const ComingSoonPage = ({ title, onBack }) => (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-lime-950 text-lime-100">
-                <h1 className="text-3xl font-bold mb-4">{title}</h1>
-                <p>Tính năng này đang được tích hợp vào phiên bản Single File.</p>
-                <button onClick={onBack} className="mt-6 px-4 py-2 bg-lime-700 rounded">Quay lại</button>
-            </div>
-        );
-
-        // ==========================================
-        // 4. MAIN APP COMPONENT
-        // ==========================================
-        
-        const App = () => {
-            const [page, setPage] = useState('home');
-            const [isKeyModal, setIsKeyModal] = useState(false);
-            const [keys, setKeys] = useState([]);
-
-            useEffect(() => {
-                const k = JSON.parse(localStorage.getItem('gemini-api-keys') || '[]');
-                setKeys(k);
-            }, []);
-
-            const saveKeys = (newKeys) => {
-                localStorage.setItem('gemini-api-keys', JSON.stringify(newKeys));
-                setKeys(newKeys);
-                setIsKeyModal(false);
-            };
-
-            return (
-                <>
-                    <ApiKeyModal isOpen={isKeyModal} onClose={() => setIsKeyModal(false)} onSave={saveKeys} initialKeys={keys} />
-                    
-                    {page === 'home' && <AppSelector setPage={setPage} setIsKeyModal={setIsKeyModal} />}
-                    {page === 'wizard' && <PromptWizardPage onBack={() => setPage('home')} />}
-                    {page === 'affiliate' && <AffiliatePage onBack={() => setPage('home')} />}
-                    {page === 'story' && <ComingSoonPage title="Storyteller (Đang cập nhật)" onBack={() => setPage('home')} />}
-                    {page === 'director' && <ComingSoonPage title="AI Director (Đang cập nhật)" onBack={() => setPage('home')} />}
-                </>
-            );
-        };
-
-        // Mount React
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-    
-    <!-- Error Handler to debug blank screens -->
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            const root = document.getElementById('root');
-            if(root.innerHTML === "") {
-                root.innerHTML = `<div style="color:red; padding:20px; font-family:monospace;">
-                    <h1>CRASH DETECTED</h1>
-                    <p>${message}</p>
-                    <p>Source: ${source}:${lineno}</p>
-                </div>`;
-            }
-        };
-    </script>
-</body>
+    <script type="text/babel" data-type="module" src="./index.tsx"></script>
+  </body>
 </html>
